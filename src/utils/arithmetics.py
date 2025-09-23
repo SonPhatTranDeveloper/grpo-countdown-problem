@@ -120,7 +120,42 @@ class ArithmeticProblemGenerator:
         return eval(expression)
 
 
-if __name__ == "__main__":
-    generator = ArithmeticProblemGenerator()
-    problem = generator.generate_problem()
-    print(problem)
+class ArithmeticProblemDescriptionGenerator:
+    def __init__(self):
+        """Initialize the description generator with various problem templates."""
+        self.problem_templates = [
+            # Direct challenge templates
+            "Using the numbers {num_1}, {num_2}, {num_3}, and {num_4}, create an expression that equals {result}.",
+            "Can you make {result} using {num_1}, {num_2}, {num_3}, and {num_4}?",
+            "Find a way to combine {num_1}, {num_2}, {num_3}, and {num_4} to get {result}.",
+            "Use all four numbers ({num_1}, {num_2}, {num_3}, {num_4}) to make {result}.",
+            # Instructional templates
+            "Given the numbers {num_1}, {num_2}, {num_3}, and {num_4}, arrange them with mathematical operators to achieve {result}.",
+            "Your task: Use {num_1}, {num_2}, {num_3}, and {num_4} exactly once each to create an expression equal to {result}.",
+            "Problem: How can you use the four numbers {num_1}, {num_2}, {num_3}, {num_4} to get {result}?",
+        ]
+
+    def generate_description(self, problem: ArithmeticProblem) -> tuple[str, int]:
+        """
+        Generate a problem description for the given arithmetic problem.
+
+        Args:
+            problem: The ArithmeticProblem to generate description for
+
+        Returns:
+            tuple[str, int]: A tuple containing (problem_description, result)
+        """
+        # Select random template
+        problem_template = random.choice(self.problem_templates)
+
+        # Generate the problem description
+        problem_description = problem_template.format(
+            num_1=problem.num_1,
+            num_2=problem.num_2,
+            num_3=problem.num_3,
+            num_4=problem.num_4,
+            result=problem.result,
+        )
+
+        return problem_description, problem.result
+
