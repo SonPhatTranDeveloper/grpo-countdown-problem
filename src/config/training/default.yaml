@@ -1,0 +1,34 @@
+# Default training configuration for GRPO
+
+# Learning parameters
+learning_rate: 5e-6
+weight_decay: 0.01
+warmup_ratio: 0.1
+lr_scheduler_type: linear
+optim: adamw_8bit
+
+# Training parameters
+num_train_epochs: 1
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 16
+bf16: true
+remove_unused_columns: false
+
+# Generation parameters
+temperature: 1.0
+max_completion_length: 512
+num_generations: 16
+max_prompt_length: 4096
+
+# Logging and saving
+report_to: 
+  - tensorboard
+logging_steps: 1
+save_strategy: steps
+save_steps: 50
+
+# Reward function weights (optional)
+reward_weights:
+  format_reward: 1.0
+  arithmetic_format_reward: 1.0
+  correctness_reward: 1.0

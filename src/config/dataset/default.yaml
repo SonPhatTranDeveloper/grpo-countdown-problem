@@ -1,0 +1,11 @@
+# Default dataset configuration
+_target_: src.utils.dataset.load_csv_dataset
+
+# Path to the training dataset CSV file
+dataset_csv: data/training_problems.csv
+
+# Maximum number of training samples to use
+max_rows: 2000
+
+# Random seed for dataset shuffling
+seed: 42

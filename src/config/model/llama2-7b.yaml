@@ -1,0 +1,20 @@
+# Llama2-7B model configuration
+
+# Hugging Face model identifier
+model_id: meta-llama/Llama-2-7b-chat-hf
+
+# Device mapping strategy
+device_map: auto
+
+# LoRA configuration
+lora:
+  r: 16
+  lora_alpha: 32
+  target_modules: 
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+  lora_dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
