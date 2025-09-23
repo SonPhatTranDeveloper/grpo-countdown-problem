@@ -118,3 +118,9 @@ class ArithmeticProblemGenerator:
         # Use eval to calculate the result (following Python's order of operations)
         # This handles operator precedence correctly (* and / before + and -)
         return eval(expression)
+
+
+if __name__ == "__main__":
+    generator = ArithmeticProblemGenerator()
+    problem = generator.generate_problem()
+    print(problem)
