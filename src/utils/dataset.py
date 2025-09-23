@@ -29,6 +29,12 @@ def map_proble_description_to_conversation(
 ) -> list[dict[str, any]]:
     """
     Map a problem description to a conversation.
+
+    Args:
+        problem_description: The problem description
+
+    Returns:
+        list[dict[str, any]]: The conversation
     """
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -39,6 +45,12 @@ def map_proble_description_to_conversation(
 def load_csv_dataset(file_path: str) -> Dataset:
     """
     Load a CSV dataset.
+
+    Args:
+        file_path: Path to the CSV file
+
+    Returns:
+        Dataset: The loaded dataset
     """
     dataset = load_dataset("csv", data_files=file_path)
     dataset = dataset.map(map_proble_description_to_conversation)
