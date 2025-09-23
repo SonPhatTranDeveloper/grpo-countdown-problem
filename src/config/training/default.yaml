@@ -26,9 +26,3 @@ report_to:
 logging_steps: 1
 save_strategy: steps
 save_steps: 50
-
-# Reward function weights (optional)
-reward_weights:
-  format_reward: 1.0
-  arithmetic_format_reward: 1.0
-  correctness_reward: 1.0
