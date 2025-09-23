@@ -158,4 +158,3 @@ class ArithmeticProblemDescriptionGenerator:
         )
 
         return problem_description, problem.result
-
