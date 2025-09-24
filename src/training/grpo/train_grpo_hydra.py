@@ -162,7 +162,7 @@ def train_and_save(trainer: GRPOTrainer, output_dir: str) -> None:
     logger.info("Saved to %s", output_dir)
 
 
-@hydra.main(version_base=None, config_path="../config/grpo", config_name="config")
+@hydra.main(version_base=None, config_path="../../config/grpo", config_name="config")
 def main(cfg: DictConfig) -> None:
     """
     Run the full GRPO training workflow with Hydra configuration.
