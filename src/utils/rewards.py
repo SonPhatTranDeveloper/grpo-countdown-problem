@@ -153,6 +153,7 @@ def format_reward_functiondef(
 
 def arithmetic_format_reward_function(
     completions: list[list[dict[str, str]]],
+    **kwargs: dict[str, any],
 ) -> list[float]:
     """
     Reward function that checks if the content of the answer tag is a valid arithmetic expression.
