@@ -10,6 +10,7 @@ The reasoning column contains the step-by-step thought process for solving the p
 import argparse
 import csv
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -31,12 +32,57 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def generate_training_data(num_problems: int) -> list[dict[str, Any]]:
+def generate_single_problem_with_reasoning(
+    problem_generator: ArithmeticProblemGenerator,
+    description_generator: ArithmeticProblemDescriptionGenerator,
+    problem_id: int,
+) -> dict[str, Any] | None:
     """
-    Generate training data with arithmetic problems and reasoning.
+    Generate a single problem with reasoning.
+
+    Args:
+        problem_generator: The arithmetic problem generator
+        description_generator: The problem description generator
+        problem_id: The ID for this problem
+
+    Returns:
+        Optional[Dict[str, Any]]: Training data entry with reasoning, or None if generation failed
+    """
+    # Generate a problem
+    problem = problem_generator.generate_problem()
+
+    if problem is None:
+        return None
+
+    # Generate description
+    problem_description, correct_answer = description_generator.generate_description(
+        problem
+    )
+
+    # Generate reasoning using OpenAI
+    logger.info(f"Generating reasoning for problem {problem_id}...")
+    reasoning = get_reasoning_for_answer(problem_description)
+
+    # Create training data entry
+    training_entry = {
+        "id": problem_id,
+        "problem_description": problem_description,
+        "correct_answer": correct_answer,
+        "reasoning": reasoning,
+    }
+
+    return training_entry
+
+
+def generate_training_data(
+    num_problems: int, max_workers: int = 8
+) -> list[dict[str, Any]]:
+    """
+    Generate training data with arithmetic problems and reasoning using threading.
 
     Args:
         num_problems: Number of problems to generate
+        max_workers: Maximum number of worker threads for parallel processing
 
     Returns:
         List[Dict[str, Any]]: List of dictionaries containing training data with reasoning
@@ -45,52 +91,88 @@ def generate_training_data(num_problems: int) -> list[dict[str, Any]]:
     description_generator = ArithmeticProblemDescriptionGenerator()
 
     training_data = []
-    generated_count = 0
-    attempts = 0
     max_total_attempts = num_problems * 10  # Allow more attempts than problems
 
-    logger.info(f"Starting generation of {num_problems} problems with reasoning...")
+    logger.info(
+        f"Starting generation of {num_problems} problems with reasoning using {max_workers} workers..."
+    )
 
-    while generated_count < num_problems and attempts < max_total_attempts:
-        attempts += 1
+    # Generate problems in batches to avoid over-submission
+    attempts = 0
+    while len(training_data) < num_problems and attempts < max_total_attempts:
+        # Calculate how many more problems we need
+        remaining_problems = num_problems - len(training_data)
 
-        # Generate a problem
-        problem = problem_generator.generate_problem()
-
-        if problem is None:
-            continue
-
-        # Generate description
-        problem_description, correct_answer = (
-            description_generator.generate_description(problem)
+        # Submit a batch of tasks (no more than we need + small buffer for failures)
+        batch_size = min(
+            max_workers, remaining_problems + 2, max_total_attempts - attempts
         )
 
-        # Generate reasoning using OpenAI
-        logger.info(f"Generating reasoning for problem {generated_count + 1}...")
-        reasoning = get_reasoning_for_answer(problem_description)
+        logger.info(
+            f"Submitting batch of {batch_size} tasks. Need {remaining_problems} more problems."
+        )
 
-        # Create training data entry
-        training_entry = {
-            "id": generated_count + 1,
-            "problem_description": problem_description,
-            "correct_answer": correct_answer,
-            "reasoning": reasoning,
-        }
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit batch of tasks
+            futures = []
+            for i in range(batch_size):
+                future = executor.submit(
+                    generate_single_problem_with_reasoning,
+                    problem_generator,
+                    description_generator,
+                    attempts + i + 1,
+                )
+                futures.append(future)
 
-        training_data.append(training_entry)
-        generated_count += 1
+            # Collect results from this batch
+            batch_results = []
+            for future in as_completed(futures):
+                try:
+                    result = future.result()
+                    if result is not None:
+                        batch_results.append(result)
 
-        if generated_count % 10 == 0:
-            logger.info(f"Generated {generated_count} problems with reasoning...")
+                        # Stop collecting if we have enough problems
+                        if len(training_data) + len(batch_results) >= num_problems:
+                            break
 
-    if generated_count < num_problems:
+                except Exception as e:
+                    logger.error(f"Error generating problem: {e}")
+
+            # Add successful results to training data
+            for _, result in enumerate(batch_results):
+                if len(training_data) >= num_problems:
+                    break
+                result["id"] = len(training_data) + 1
+                training_data.append(result)
+
+                if len(training_data) % 10 == 0:
+                    logger.info(
+                        f"Generated {len(training_data)} problems with reasoning..."
+                    )
+
+        attempts += batch_size
+
+        # Log progress
+        logger.info(
+            f"Completed batch. Have {len(training_data)} problems, need {num_problems}"
+        )
+
+        # Stop if we have enough problems
+        if len(training_data) >= num_problems:
+            break
+
+    if len(training_data) < num_problems:
         logger.warning(
-            f"Only generated {generated_count} out of {num_problems} requested problems after {attempts} attempts"
+            f"Only generated {len(training_data)} out of {num_problems} requested problems after {attempts} attempts"
         )
     else:
         logger.info(
-            f"Successfully generated {generated_count} problems with reasoning in {attempts} attempts"
+            f"Successfully generated {len(training_data)} problems with reasoning in {attempts} attempts"
         )
+
+    # Sort training data by ID to maintain order
+    training_data.sort(key=lambda x: x["id"])
 
     return training_data
 
@@ -142,6 +224,13 @@ def main() -> None:
         "--output_file", type=str, required=True, help="Path to the output CSV file"
     )
 
+    parser.add_argument(
+        "--max_workers",
+        type=int,
+        default=8,
+        help="Maximum number of worker threads for parallel processing (default: 8)",
+    )
+
     args = parser.parse_args()
 
     # Validate arguments
@@ -149,10 +238,14 @@ def main() -> None:
         logger.error("Number of problems must be positive")
         return
 
+    if args.max_workers <= 0:
+        logger.error("Number of workers must be positive")
+        return
+
     output_path = Path(args.output_file)
 
     # Generate training data
-    training_data = generate_training_data(args.num_problems)
+    training_data = generate_training_data(args.num_problems, args.max_workers)
 
     if not training_data:
         logger.error("Failed to generate any training data")

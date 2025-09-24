@@ -3,8 +3,6 @@ from collections.abc import Callable
 from datasets import Dataset, load_dataset
 from openai import OpenAI
 
-from src.utils.caching import cached
-
 
 def map_problem_description_to_conversation(
     row: dict[str, any],
@@ -44,6 +42,14 @@ Analyze the numbers and target result, try different combinations and operations
 (Your arithmetic expression, e.g., "3 + 7 x 2 - 1")
 </answer>
 
+Example:
+<think>
+Analyze the numbers and target result, try different combinations and operations, calculate and verify results step by step.
+</think>
+<answer>
+3 + 7 x 2 - 1
+</answer>
+
 There should ONLY be ONE <answer> block containing only the arithmetic expression.
 """
     return {
@@ -54,7 +60,6 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
     }
 
 
-@cached(cache_dir="cache")
 def get_reasoning_for_answer(problem_description: str) -> str:
     """
     Get the reasoning for the answer using OpenAI GPT-4o-mini.
@@ -78,10 +83,11 @@ def get_reasoning_for_answer(problem_description: str) -> str:
 6. There should ONLY be ONE <answer> block containing only the arithmetic expression.
 
 **Rules:**
-- Use each of the four given numbers exactly once
+- Must use ALL the given numbers in the arithmetic expression
 - Only use operators: +, -, x, / (use 'x' for multiplication, not '*')
 - The expression must equal the target result exactly
-- Show clear mathematical reasoning in your thinking
+- Don't use parenthesis in the arithmetic expression
+- Reasoning should be clear and detailed, but not too verbose (aim for 100-200 words)
 - Your final answer must be a valid arithmetic expression
 
 **Answer Format:**
@@ -100,9 +106,8 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": problem_description},
         ],
-        temperature=1.0,
-        max_tokens=256,
-        reasoning={"effort": "medium"},
+        max_tokens=2048,
+        temperature=0.5,
     )
 
     return response.choices[0].message.content.strip()
