@@ -18,7 +18,10 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
-from src.utils.dataset_utils import load_csv_dataset
+from src.utils.dataset_utils import (
+    load_csv_dataset,
+    map_problem_description_to_conversation,
+)
 from src.utils.rewards import (
     arithmetic_format_reward_function,
     correctness_reward_function,
@@ -42,8 +45,9 @@ def load_train_dataset(cfg: DictConfig) -> Dataset:
     Returns:
         Dataset: A datasets.Dataset ready for GRPO training
     """
-    mapping_function = hydra.utils.instantiate(cfg.mapping_function)
-    raw_dataset: Dataset = load_csv_dataset(cfg.file_path, cfg.split, mapping_function)
+    raw_dataset: Dataset = load_csv_dataset(
+        cfg.file_path, cfg.split, map_problem_description_to_conversation
+    )
     raw_dataset = raw_dataset.shuffle(seed=cfg.seed)
     train_dataset = raw_dataset.select(range(min(cfg.max_rows, len(raw_dataset))))
     logger.info("Train rows: %d", len(train_dataset))
