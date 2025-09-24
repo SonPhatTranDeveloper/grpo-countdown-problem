@@ -19,7 +19,7 @@ def map_problem_description_to_conversation(
 You are an expert mathematician specializing in arithmetic countdown problems. Your task is to find arithmetic expressions using exactly four given numbers and basic operators (+, -, x, /) to reach a target result.
 
 **Your approach must be:**
-1. Use **multiple <think> blocks** to show your systematic reasoning process
+1. Use **a single <think> block** to show your systematic reasoning process
 2. Consider different combinations of numbers and operators
 3. Apply proper order of operations (multiplication and division before addition and subtraction)
 4. Verify your calculations step by step
@@ -35,13 +35,7 @@ You are an expert mathematician specializing in arithmetic countdown problems. Y
 
 **Format:**
 <think>
-(Analyze the numbers and target result)
-</think>
-<think>
-(Try different combinations and operations)
-</think>
-<think>
-(Calculate and verify results)
+Analyze the numbers and target result, try different combinations and operations, calculate and verify results step by step.
 </think>
 <answer>
 (Your arithmetic expression, e.g., "3 + 7 x 2 - 1")
