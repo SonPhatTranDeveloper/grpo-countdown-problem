@@ -2,12 +2,16 @@
 Collection of various reward signal for the arithmetic problem.
 """
 
+import logging
 import re
 
 from src.utils.string_helper import (
     extract_answers_from_completions,
     extract_response_from_completions,
 )
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("rewards")
 
 
 def _is_valid_arithmetic_expression(expression: str) -> bool:
@@ -217,6 +221,11 @@ def correctness_reward_function(
 
     # Get the answer from the completions
     answers = extract_answers_from_completions(completions)
+    completions = [completion[-1]["content"] for completion in completions]
+
+    # Display first question and answer
+    logger.info("First question: %s", completions[0])
+    logger.info("First answer: %s", answers[0])
 
     return [
         _calculate_distance_based_reward(answer, correct_answer) for answer in answers

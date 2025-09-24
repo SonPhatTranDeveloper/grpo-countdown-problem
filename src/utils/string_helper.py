@@ -46,4 +46,4 @@ def extract_answers_from_completions(
     Returns:
         The answers from the completions
     """
-    return [extract_answer(completion) for completion in completions]
+    return [extract_answer(completion[-1]["content"]) for completion in completions]
