@@ -21,8 +21,7 @@ num_generations: 16
 max_prompt_length: 4096
 
 # Logging and saving
-report_to: 
-  - tensorboard
+report_to: tensorboard
 logging_steps: 1
 save_strategy: steps
 save_steps: 50
