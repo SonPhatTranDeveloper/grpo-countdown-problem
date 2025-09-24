@@ -3,7 +3,10 @@ name = "grpo-countdown-problem"
 version = "0.1.0"
 description = "A simple project training an LLM to solve the GRPO countdown problem"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "datasets>=4.1.1",
+    "metrics>=0.0.2",
+]
 
 [dependency-groups]
 dev = [

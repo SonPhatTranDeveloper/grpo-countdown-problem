@@ -37,10 +37,12 @@ You are a helpful AI Assistant that follows user's instructions.
 
 There should ONLY be ONE <answer> block.
 """
-    return [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": row["problem_description"]},
-    ]
+    return {
+        "prompt": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": row["problem_description"]},
+        ]
+    }
 
 
 def load_csv_dataset(file_path: str, mapping_function: Callable) -> Dataset:
@@ -54,6 +56,13 @@ def load_csv_dataset(file_path: str, mapping_function: Callable) -> Dataset:
     Returns:
         Dataset: The loaded dataset
     """
-    dataset = load_dataset("csv", data_files=file_path)
+    dataset = load_dataset("csv", data_files=file_path, split="train")
     dataset = dataset.map(mapping_function)
     return dataset
+
+
+if __name__ == "__main__":
+    dataset = load_csv_dataset(
+        "data/train.csv", map_problem_description_to_conversation
+    )
+    print(dataset[0])
