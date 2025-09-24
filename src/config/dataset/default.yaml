@@ -1,8 +1,11 @@
-# Default dataset configuration
-_target_: src.utils.dataset.load_csv_dataset
-
 # Path to the training dataset CSV file
-dataset_csv: data/training_problems.csv
+file_path: data/grpo/train.csv
+
+# Split of the dataset
+split: train
+
+# Mapping function to map the dataset
+mapping_function: src.utils.dataset.map_problem_description_to_conversation
 
 # Maximum number of training samples to use
 max_rows: 2000

@@ -45,24 +45,37 @@ There should ONLY be ONE <answer> block.
     }
 
 
-def load_csv_dataset(file_path: str, mapping_function: Callable) -> Dataset:
+def load_csv_dataset(file_path: str, split: str, mapping_function: Callable) -> Dataset:
     """
     Load a CSV dataset.
 
     Args:
         file_path: Path to the CSV file
         mapping_function: Function to map the dataset
+        split: Split of the dataset
 
     Returns:
         Dataset: The loaded dataset
     """
-    dataset = load_dataset("csv", data_files=file_path, split="train")
+    dataset = load_dataset("csv", data_files=file_path, split=split)
     dataset = dataset.map(mapping_function)
     return dataset
 
 
-if __name__ == "__main__":
-    dataset = load_csv_dataset(
-        "data/train.csv", map_problem_description_to_conversation
-    )
-    print(dataset[0])
+def load_huggingface_dataset(
+    dataset_name: str, split: str, mapping_function: Callable
+) -> Dataset:
+    """
+    Load a Hugging Face dataset.
+
+    Args:
+        dataset_name: Name of the dataset
+        split: Split of the dataset
+        mapping_function: Function to map the dataset
+
+    Returns:
+        Dataset: The loaded dataset
+    """
+    dataset = load_dataset(dataset_name, split=split)
+    dataset = dataset.map(mapping_function)
+    return dataset

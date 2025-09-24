@@ -18,7 +18,7 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
-from src.utils.dataset import load_csv_dataset
+from src.utils.dataset_utils import load_csv_dataset
 from src.utils.rewards import (
     arithmetic_format_reward_function,
     correctness_reward_function,
@@ -42,7 +42,9 @@ def load_train_dataset(cfg: DictConfig) -> Dataset:
     Returns:
         Dataset: A datasets.Dataset ready for GRPO training
     """
-    raw_dataset: Dataset = load_csv_dataset(cfg.dataset_csv)
+    raw_dataset: Dataset = load_csv_dataset(
+        cfg.file_path, cfg.split, cfg.mapping_function
+    )
     raw_dataset = raw_dataset.shuffle(seed=cfg.seed)
     train_dataset = raw_dataset.select(range(min(cfg.max_rows, len(raw_dataset))))
     logger.info("Train rows: %d", len(train_dataset))
@@ -174,8 +176,8 @@ def main(cfg: DictConfig) -> None:
     logger.info("Configuration:\n%s", OmegaConf.to_yaml(cfg))
 
     # Validate dataset file exists
-    if not Path(cfg.dataset.dataset_csv).exists():
-        logger.error("Dataset CSV file does not exist: %s", cfg.dataset.dataset_csv)
+    if not Path(cfg.dataset.file_path).exists():
+        logger.error("Dataset CSV file does not exist: %s", cfg.dataset.file_path)
         return
 
     if cfg.dataset.max_rows <= 0:
