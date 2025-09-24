@@ -25,20 +25,20 @@ There should ONLY be ONE <answer> block.
 
 
 def map_proble_description_to_conversation(
-    problem_description: str,
+    row: dict[str, any],
 ) -> list[dict[str, any]]:
     """
     Map a problem description to a conversation.
 
     Args:
-        problem_description: The problem description
+        row: The row
 
     Returns:
         list[dict[str, any]]: The conversation
     """
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": problem_description},
+        {"role": "user", "content": row["problem_description"]},
     ]
 
 
