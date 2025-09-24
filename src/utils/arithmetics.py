@@ -125,14 +125,18 @@ class ArithmeticProblemDescriptionGenerator:
         """Initialize the description generator with various problem templates."""
         self.problem_templates = [
             # Direct challenge templates
-            "Using the numbers {num_1}, {num_2}, {num_3}, and {num_4}, create an expression that equals {result}.",
-            "Can you make {result} using {num_1}, {num_2}, {num_3}, and {num_4}?",
-            "Find a way to combine {num_1}, {num_2}, {num_3}, and {num_4} to get {result}.",
-            "Use all four numbers ({num_1}, {num_2}, {num_3}, {num_4}) to make {result}.",
+            "Using the numbers {num_1}, {num_2}, {num_3}, and {num_4}, create an expression that equals {result}. You can only use +, -, x, and / operators.",
+            "Can you make {result} using {num_1}, {num_2}, {num_3}, and {num_4}? Use only +, -, x, and / operators.",
+            "Find a way to combine {num_1}, {num_2}, {num_3}, and {num_4} to get {result} using only +, -, x, and / operators.",
+            "Use all four numbers ({num_1}, {num_2}, {num_3}, {num_4}) to make {result}. Only +, -, x, and / operators are allowed.",
             # Instructional templates
-            "Given the numbers {num_1}, {num_2}, {num_3}, and {num_4}, arrange them with mathematical operators to achieve {result}.",
-            "Your task: Use {num_1}, {num_2}, {num_3}, and {num_4} exactly once each to create an expression equal to {result}.",
-            "Problem: How can you use the four numbers {num_1}, {num_2}, {num_3}, {num_4} to get {result}?",
+            "Given the numbers {num_1}, {num_2}, {num_3}, and {num_4}, arrange them with +, -, x, and / operators to achieve {result}.",
+            "Your task: Use {num_1}, {num_2}, {num_3}, and {num_4} exactly once each with only +, -, x, and / operators to create an expression equal to {result}.",
+            "Problem: How can you use the four numbers {num_1}, {num_2}, {num_3}, {num_4} with +, -, x, and / operators to get {result}?",
+            # Additional templates with operator emphasis
+            "Create a mathematical expression using {num_1}, {num_2}, {num_3}, and {num_4} that equals {result}. Only basic arithmetic operators (+, -, x, /) are permitted.",
+            "Arrange {num_1}, {num_2}, {num_3}, and {num_4} with +, -, x, and / to make {result}.",
+            "Using only addition (+), subtraction (-), multiplication (x), and division (/), combine {num_1}, {num_2}, {num_3}, and {num_4} to equal {result}.",
         ]
 
     def generate_description(self, problem: ArithmeticProblem) -> tuple[str, int]:
