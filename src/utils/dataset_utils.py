@@ -1,7 +1,6 @@
 from collections.abc import Callable
 
 from datasets import Dataset, load_dataset
-from dotenv import load_dotenv
 from openai import OpenAI
 
 from src.utils.caching import cached
@@ -96,13 +95,14 @@ Your arithmetic expression, e.g., 3 + 7 x 2 - 1
 There should ONLY be ONE <answer> block containing only the arithmetic expression."""
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": problem_description},
         ],
         temperature=1.0,
-        max_tokens=1000,
+        max_tokens=256,
+        reasoning={"effort": "medium"},
     )
 
     return response.choices[0].message.content.strip()
@@ -142,4 +142,3 @@ def load_huggingface_dataset(
     dataset = load_dataset(dataset_name, split=split)
     dataset = dataset.map(mapping_function)
     return dataset
-
