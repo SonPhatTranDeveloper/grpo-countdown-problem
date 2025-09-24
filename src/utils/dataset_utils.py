@@ -4,6 +4,8 @@ from datasets import Dataset, load_dataset
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from src.utils.caching import cached
+
 
 def map_problem_description_to_conversation(
     row: dict[str, any],
@@ -53,6 +55,7 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
     }
 
 
+@cached(cache_dir="cache")
 def get_reasoning_for_answer(problem_description: str) -> str:
     """
     Get the reasoning for the answer using OpenAI GPT-4o-mini.
