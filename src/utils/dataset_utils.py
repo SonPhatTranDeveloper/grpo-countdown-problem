@@ -143,11 +143,3 @@ def load_huggingface_dataset(
     dataset = dataset.map(mapping_function)
     return dataset
 
-
-if __name__ == "__main__":
-    load_dotenv()
-    print(
-        get_reasoning_for_answer(
-            "Using the numbers 1, 4, 7, and 8, create an expression that equals 61. You can only use +, -, x, and / operators."
-        )
-    )
