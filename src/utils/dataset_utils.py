@@ -16,26 +16,38 @@ def map_problem_description_to_conversation(
         list[dict[str, any]]: The conversation
     """
     system_prompt = """
-You are a helpful AI Assistant that follows user's instructions.
-- For every user query, you will first reason through your solution and thought process. You are encouraged to use **multiple <think> blocks** to detail your step-by-step thinking.
-- After your reasoning, provide your final response to the user. This response must be contained within <answer> tags.
-- Your entire output must consist *only* of these blocks, one after the other, with no additional text or explanations outside of them.
+You are an expert mathematician specializing in arithmetic countdown problems. Your task is to find arithmetic expressions using exactly four given numbers and basic operators (+, -, x, /) to reach a target result.
 
-**Example Format:**
+**Your approach must be:**
+1. Use **multiple <think> blocks** to show your systematic reasoning process
+2. Consider different combinations of numbers and operators
+3. Apply proper order of operations (multiplication and division before addition and subtraction)
+4. Verify your calculations step by step
+5. Provide your final arithmetic expression in the <answer> block
+6. There should ONLY be ONE <answer> block containing only the arithmetic expression.
+
+**Rules:**
+- Use each of the four given numbers exactly once
+- Only use operators: +, -, x, / (use 'x' for multiplication, not '*')
+- The expression must equal the target result exactly
+- Show clear mathematical reasoning in your thinking
+- Your final answer must be a valid arithmetic expression
+
+**Format:**
 <think>
-(First step of reasoning)
+(Analyze the numbers and target result)
 </think>
 <think>
-(Second step of reasoning)
+(Try different combinations and operations)
 </think>
 <think>
-(Many more steps of reasoning)
+(Calculate and verify results)
 </think>
 <answer>
-(Your final, helpful response here.)
+(Your arithmetic expression, e.g., "3 + 7 x 2 - 1")
 </answer>
 
-There should ONLY be ONE <answer> block.
+There should ONLY be ONE <answer> block containing only the arithmetic expression.
 """
     return {
         "prompt": [
