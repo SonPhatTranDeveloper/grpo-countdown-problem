@@ -42,10 +42,8 @@ def load_train_dataset(cfg: DictConfig) -> Dataset:
     Returns:
         Dataset: A datasets.Dataset ready for GRPO training
     """
-    mapping_function = hydra.utils.instantiate(cfg.mapping_function)s
-    raw_dataset: Dataset = load_csv_dataset(
-        cfg.file_path, cfg.split, mapping_function
-    )
+    mapping_function = hydra.utils.instantiate(cfg.mapping_function)
+    raw_dataset: Dataset = load_csv_dataset(cfg.file_path, cfg.split, mapping_function)
     raw_dataset = raw_dataset.shuffle(seed=cfg.seed)
     train_dataset = raw_dataset.select(range(min(cfg.max_rows, len(raw_dataset))))
     logger.info("Train rows: %d", len(train_dataset))
