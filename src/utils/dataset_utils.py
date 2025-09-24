@@ -17,7 +17,7 @@ def map_problem_description_to_conversation(
         list[dict[str, any]]: The conversation
     """
     system_prompt = """
-You are an expert mathematician specializing in arithmetic countdown problems. Your task is to find arithmetic expressions using exactly four given numbers and basic operators (+, -, x, /) to reach a target result.
+You are an expert mathematician specializing in arithmetic countdown problems. Your task is to find arithmetic expressions using exactly four given numbers and basic operators (+, -, *, /) to reach a target result.
 
 **Your approach must be:**
 1. Use **a single <think> block** to show your systematic reasoning process
@@ -29,7 +29,7 @@ You are an expert mathematician specializing in arithmetic countdown problems. Y
 
 **Rules:**
 - Use each of the four given numbers exactly once
-- Only use operators: +, -, x, / (use 'x' for multiplication, not '*')
+- Only use operators: +, -, *, / (use '*' for multiplication)
 - The expression must equal the target result exactly
 - Show clear mathematical reasoning in your thinking
 - Your final answer must be a valid arithmetic expression
@@ -39,7 +39,7 @@ You are an expert mathematician specializing in arithmetic countdown problems. Y
 Analyze the numbers and target result, try different combinations and operations, calculate and verify results step by step.
 </think>
 <answer>
-(Your arithmetic expression, e.g., "3 + 7 x 2 - 1")
+(Your arithmetic expression, e.g., "3 + 7 * 2 - 1")
 </answer>
 
 Example:
@@ -47,7 +47,7 @@ Example:
 Analyze the numbers and target result, try different combinations and operations, calculate and verify results step by step.
 </think>
 <answer>
-3 + 7 x 2 - 1
+3 + 7 * 2 - 1
 </answer>
 
 There should ONLY be ONE <answer> block containing only the arithmetic expression.
@@ -72,7 +72,7 @@ def get_reasoning_for_answer(problem_description: str) -> str:
     """
     client = OpenAI()
 
-    system_prompt = """You are an expert mathematician specializing in arithmetic countdown problems. Your task is to find arithmetic expressions using exactly four given numbers and basic operators (+, -, x, /) to reach a target result.
+    system_prompt = """You are an expert mathematician specializing in arithmetic countdown problems. Your task is to find arithmetic expressions using exactly four given numbers and basic operators (+, -, *, /) to reach a target result.
 
 **Your approach must be:**
 1. Use **a single <think> block** to show your systematic reasoning process
@@ -84,7 +84,7 @@ def get_reasoning_for_answer(problem_description: str) -> str:
 
 **Rules:**
 - Must use ALL the given numbers in the arithmetic expression
-- Only use operators: +, -, x, / (use 'x' for multiplication, not '*')
+- Only use operators: +, -, *, /
 - The expression must equal the target result exactly
 - Don't use parenthesis in the arithmetic expression
 - Reasoning should be clear and detailed, but not too verbose (aim for 100-200 words)
@@ -95,19 +95,19 @@ def get_reasoning_for_answer(problem_description: str) -> str:
 Analyze the numbers and target result, try different combinations and operations, calculate and verify results step by step.
 </think>
 <answer>
-Your arithmetic expression, e.g., 3 + 7 x 2 - 1
+Your arithmetic expression, e.g., 3 + 7 * 2 - 1
 </answer>
 
 There should ONLY be ONE <answer> block containing only the arithmetic expression."""
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": problem_description},
         ],
         max_tokens=2048,
-        temperature=0.5,
+        temperature=0.7,
     )
 
     return response.choices[0].message.content.strip()
