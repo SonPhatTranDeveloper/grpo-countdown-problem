@@ -19,9 +19,7 @@ from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
 from src.utils.rewards import (
-    arithmetic_format_reward_function,
-    correctness_reward_function,
-    format_reward_functiondef,
+    mathematical_correctness_reward_function,
 )
 
 # Set up logging
@@ -155,9 +153,7 @@ def create_trainer(
         GRPOTrainer: An initialized trl.GRPOTrainer instance
     """
     reward_funcs: list[Callable[..., list[float]]] = [
-        format_reward_functiondef,  # Checks for <think> and <answer> tags
-        arithmetic_format_reward_function,  # Validates arithmetic expression format
-        correctness_reward_function,  # Rewards based on correctness of the answer
+        mathematical_correctness_reward_function,
     ]
     trainer = GRPOTrainer(
         model=model,
