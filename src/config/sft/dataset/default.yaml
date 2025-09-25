@@ -1,0 +1,11 @@
+# Path to the training dataset CSV file
+file_path: data/sft/train.csv
+
+# Split of the dataset
+split: train
+
+# Maximum number of training samples to use
+max_rows: 2000
+
+# Random seed for dataset shuffling
+seed: 42
