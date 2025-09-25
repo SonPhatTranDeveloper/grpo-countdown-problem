@@ -1,3 +1,9 @@
+from collections.abc import Callable
+
+import pandas as pd
+from datasets import Dataset
+
+
 def map_problem_description_to_conversation_sft(
     row: dict[str, any],
 ) -> list[dict[str, any]]:
@@ -46,10 +52,19 @@ Example:
 
 There should ONLY be ONE <answer> block containing only the arithmetic expression.
 """
-    return {
-        "prompt": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": row["problem_description"]},
-            {"role": "assistant", "content": row["reasoning"]},
-        ]
-    }
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": row["problem_description"]},
+        {"role": "assistant", "content": row["reasoning"]},
+    ]
+
+
+def load_csv_dataset_sft(
+    file_path: str, split: str, mapping_function: Callable
+) -> Dataset:
+    """
+    Load a CSV dataset.
+    """
+    dataset = pd.read_csv(file_path)
+    dataset["messages"] = dataset.apply(mapping_function, axis=1)
+    return Dataset.from_pandas(dataset)

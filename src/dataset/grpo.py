@@ -4,7 +4,7 @@ from datasets import Dataset, load_dataset
 from openai import OpenAI
 
 
-def map_problem_description_to_conversation(
+def map_problem_description_to_conversation_grpo(
     row: dict[str, any],
 ) -> list[dict[str, any]]:
     """
@@ -113,7 +113,9 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
     return response.choices[0].message.content.strip()
 
 
-def load_csv_dataset(file_path: str, split: str, mapping_function: Callable) -> Dataset:
+def load_csv_dataset_grpo(
+    file_path: str, split: str, mapping_function: Callable
+) -> Dataset:
     """
     Load a CSV dataset.
 
