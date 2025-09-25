@@ -255,7 +255,7 @@ def mathematical_correctness_reward_function(
     rewards = []
 
     # Display completions
-    logger.info("Completions:\n%s", completions[0])
+    logger.info("Completion:\n%s", completions[0])
 
     for completion, gt, first_num, second_num, third_num, fourth_num in zip(
         completions,
