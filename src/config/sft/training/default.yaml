@@ -16,11 +16,9 @@ remove_unused_columns: false
 
 # SFT-specific parameters
 max_length: 4096
-packing: false
 
 # Logging and saving
 report_to: tensorboard
 logging_steps: 1
 save_strategy: steps
 save_steps: 50
-eval_strategy: no
