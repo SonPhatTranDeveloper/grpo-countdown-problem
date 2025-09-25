@@ -67,7 +67,7 @@ def create_lora_model(cfg: DictConfig) -> PreTrainedModel:
     lora_cfg = LoraConfig(
         r=cfg.lora.r,
         lora_alpha=cfg.lora.lora_alpha,
-        target_modules=OmegaConf.to_list(cfg.lora.target_modules),
+        target_modules=OmegaConf.to_container(cfg.lora.target_modules),
         lora_dropout=cfg.lora.lora_dropout,
         bias=cfg.lora.bias,
         task_type=cfg.lora.task_type,
