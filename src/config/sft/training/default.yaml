@@ -23,4 +23,4 @@ report_to: tensorboard
 logging_steps: 1
 save_strategy: steps
 save_steps: 50
-evaluation_strategy: no
+eval_strategy: no

@@ -126,7 +126,7 @@ def create_sft_config(
         logging_steps=logging_steps,
         save_strategy="steps",
         save_steps=save_steps,
-        evaluation_strategy="no",
+        eval_strategy="no",
     )
 
 

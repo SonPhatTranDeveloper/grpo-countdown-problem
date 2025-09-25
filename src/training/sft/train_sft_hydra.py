@@ -107,7 +107,7 @@ def create_sft_config(cfg: DictConfig, output_dir: str) -> SFTConfig:
         logging_steps=cfg.logging_steps,
         save_strategy=cfg.save_strategy,
         save_steps=cfg.save_steps,
-        evaluation_strategy=cfg.evaluation_strategy,
+        eval_strategy=cfg.eval_strategy,
     )
 
 
