@@ -268,7 +268,7 @@ def mathematical_correctness_reward_function(
     ):
         try:
             # Check if the format is correct
-            match = re.search(r"<answer>(.*?)<\/answer>", completion)
+            match = re.search(r"<answer>(.*?)<\/answer>", completion, re.DOTALL)
             if match is None:
                 logger.info(
                     "┌─────────────────────────────────────────────────────────────────────┐"
