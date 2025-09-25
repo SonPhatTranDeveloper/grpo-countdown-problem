@@ -59,9 +59,7 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
     ]
 
 
-def load_csv_dataset_sft(
-    file_path: str, split: str, mapping_function: Callable
-) -> Dataset:
+def load_csv_dataset_sft(file_path: str, mapping_function: Callable) -> Dataset:
     """
     Load a CSV dataset.
     """

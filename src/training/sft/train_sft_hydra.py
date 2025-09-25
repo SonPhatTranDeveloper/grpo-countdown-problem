@@ -40,7 +40,7 @@ def load_train_dataset(cfg: DictConfig) -> Dataset:
         Dataset: A datasets.Dataset ready for SFT training
     """
     raw_dataset: Dataset = load_csv_dataset_sft(
-        cfg.file_path, cfg.split, map_problem_description_to_conversation_sft
+        cfg.file_path, map_problem_description_to_conversation_sft
     )
     raw_dataset = raw_dataset.shuffle(seed=cfg.seed)
     train_dataset = raw_dataset.select(range(min(cfg.max_rows, len(raw_dataset))))

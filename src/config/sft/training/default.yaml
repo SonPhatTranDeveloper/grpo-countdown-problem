@@ -15,7 +15,7 @@ bf16: true
 remove_unused_columns: false
 
 # SFT-specific parameters
-max_seq_length: 2048
+max_seq_length: 4096
 packing: false
 
 # Logging and saving
