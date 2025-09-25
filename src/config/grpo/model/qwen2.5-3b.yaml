@@ -1,7 +1,7 @@
 # Qwen2.5-3B model configuration
 
 # Hugging Face model identifier
-model_id: models/sft
+model_id: Qwen/Qwen2.5-3B-Instruct
 
 # Device mapping strategy
 device_map: auto
