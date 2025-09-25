@@ -129,7 +129,6 @@ def create_trainer(
     """
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
         args=args,
         train_dataset=train_dataset,
     )
