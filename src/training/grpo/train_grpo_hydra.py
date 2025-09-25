@@ -18,7 +18,7 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
-from src.dataset import load_csv_dataset
+from src.dataset import load_csv_dataset_grpo
 from src.dataset.grpo import map_problem_description_to_conversation_grpo
 from src.utils.rewards import (
     arithmetic_format_reward_function,
@@ -43,7 +43,7 @@ def load_train_dataset(cfg: DictConfig) -> Dataset:
     Returns:
         Dataset: A datasets.Dataset ready for GRPO training
     """
-    raw_dataset: Dataset = load_csv_dataset(
+    raw_dataset: Dataset = load_csv_dataset_grpo(
         cfg.file_path, cfg.split, map_problem_description_to_conversation_grpo
     )
     raw_dataset = raw_dataset.shuffle(seed=cfg.seed)
