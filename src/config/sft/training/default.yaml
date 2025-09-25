@@ -21,4 +21,4 @@ max_length: 4096
 report_to: tensorboard
 logging_steps: 1
 save_strategy: steps
-save_steps: 50
+save_steps: 10
