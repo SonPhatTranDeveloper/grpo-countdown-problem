@@ -230,3 +230,60 @@ def correctness_reward_function(
     return [
         _calculate_distance_based_reward(answer, correct_answer) for answer in answers
     ]
+
+
+def mathematical_correctness_reward_function(
+    completions: list[str], **kwargs
+) -> list[float]:
+    """
+    Evaluates completions based on Mathematical correctness of the answer
+
+    Args:
+        completions: Generated outputs
+        target: Expected answers
+        **kwargs: Additional keyword arguments
+
+    Returns:
+        list[float]: Reward scores (1.0 for correct, 0.0 for incorrect)
+    """
+    target = kwargs["correct_answer"]
+    rewards = []
+    for completion, gt in zip(completions, target, strict=False):
+        try:
+            # Check if the format is correct
+            match = re.search(r"<answer>(.*?)<\/answer>", completion)
+            if match is None:
+                rewards.append(0.0)
+                continue
+
+            # Extract the "answer" part from the completion
+            equation = match.group(1).strip()
+            if "=" in equation:
+                equation = equation.split("=")[0]
+
+            # Extract all numbers from the equation
+            # used_numbers = [int(n) for n in re.findall(r'\d+', equation)]
+
+            # Check if all numbers are used exactly once
+            # if sorted(used_numbers) != sorted(numbers):
+            #     rewards.append(0.0)
+            #     continue
+
+            # Define a regex pattern that only allows numbers, operators, and whitespace
+            allowed_pattern = r"^[\d+\-*/.\s]+$"
+            if not re.match(allowed_pattern, equation):
+                rewards.append(0.0)
+                continue
+
+            # Evaluate the equation with restricted globals and locals
+            result = eval(equation, {"__builtins__": None}, {})
+
+            # Check if the equation is correct and matches the ground truth
+            if abs(float(result) - float(gt)) < 1e-5:
+                rewards.append(1.0)
+            else:
+                rewards.append(0.0)
+        except Exception:
+            # If evaluation fails, reward is 0
+            rewards.append(0.0)
+    return rewards
