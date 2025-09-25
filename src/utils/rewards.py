@@ -267,6 +267,22 @@ def mathematical_correctness_reward_function(
             # Check if the format is correct
             match = re.search(r"<answer>(.*?)<\/answer>", completion)
             if match is None:
+                logger.info(
+                    "┌─────────────────────────────────────────────────────────────────────┐"
+                )
+                logger.info(
+                    "│ ❌ FORMAT ERROR: No <answer> tags found in completion              │"
+                )
+                logger.info(
+                    "├─────────────────────────────────────────────────────────────────────┤"
+                )
+                logger.info(
+                    "│ Completion snippet: %-47s │",
+                    completion[:47] + "..." if len(completion) > 47 else completion,
+                )
+                logger.info(
+                    "└─────────────────────────────────────────────────────────────────────┘"
+                )
                 rewards.append(0.0)
                 continue
 
@@ -281,12 +297,40 @@ def mathematical_correctness_reward_function(
             # Check if all numbers are used exactly once
             correct_numbers = [first_num, second_num, third_num, fourth_num]
             if sorted(used_numbers) != sorted(correct_numbers):
+                logger.info(
+                    "┌─────────────────────────────────────────────────────────────────────┐"
+                )
+                logger.info(
+                    "│ ❌ NUMBER USAGE ERROR: Incorrect numbers used                      │"
+                )
+                logger.info(
+                    "├─────────────────────────────────────────────────────────────────────┤"
+                )
+                logger.info("│ Equation: %-57s │", equation[:57])
+                logger.info("│ Expected numbers: %-51s │", str(correct_numbers))
+                logger.info("│ Used numbers: %-55s │", str(used_numbers))
+                logger.info(
+                    "└─────────────────────────────────────────────────────────────────────┘"
+                )
                 rewards.append(0.0)
                 continue
 
             # Define a regex pattern that only allows numbers, operators, and whitespace
             allowed_pattern = r"^[\d+\-*/.\s]+$"
             if not re.match(allowed_pattern, equation):
+                logger.info(
+                    "┌─────────────────────────────────────────────────────────────────────┐"
+                )
+                logger.info(
+                    "│ ❌ INVALID CHARACTERS: Equation contains disallowed characters     │"
+                )
+                logger.info(
+                    "├─────────────────────────────────────────────────────────────────────┤"
+                )
+                logger.info("│ Equation: %-57s │", equation[:57])
+                logger.info(
+                    "└─────────────────────────────────────────────────────────────────────┘"
+                )
                 rewards.append(0.0)
                 continue
 
@@ -295,10 +339,62 @@ def mathematical_correctness_reward_function(
 
             # Check if the equation is correct and matches the ground truth
             if abs(float(result) - float(gt)) < 1e-5:
+                logger.info(
+                    "┌─────────────────────────────────────────────────────────────────────┐"
+                )
+                logger.info(
+                    "│ ✅ CORRECT ANSWER: Perfect match!                                  │"
+                )
+                logger.info(
+                    "├─────────────────────────────────────────────────────────────────────┤"
+                )
+                logger.info(
+                    "│ Equation: %-35s = %-20s │", equation[:35], str(result)[:20]
+                )
+                logger.info("│ Target: %-59s │", str(gt))
+                logger.info(
+                    "└─────────────────────────────────────────────────────────────────────┘"
+                )
                 rewards.append(1.0)
             else:
+                logger.info(
+                    "┌─────────────────────────────────────────────────────────────────────┐"
+                )
+                logger.info(
+                    "│ ❌ WRONG RESULT: Equation evaluated to incorrect value             │"
+                )
+                logger.info(
+                    "├─────────────────────────────────────────────────────────────────────┤"
+                )
+                logger.info(
+                    "│ Equation: %-35s = %-20s │", equation[:35], str(result)[:20]
+                )
+                logger.info("│ Expected: %-57s │", str(gt))
+                logger.info(
+                    "│ Difference: %-55s │", str(abs(float(result) - float(gt)))
+                )
+                logger.info(
+                    "└─────────────────────────────────────────────────────────────────────┘"
+                )
                 rewards.append(0.0)
-        except Exception:
+        except Exception as e:
             # If evaluation fails, reward is 0
+            logger.info(
+                "┌─────────────────────────────────────────────────────────────────────┐"
+            )
+            logger.info(
+                "│ ❌ EVALUATION ERROR: Exception occurred during processing           │"
+            )
+            logger.info(
+                "├─────────────────────────────────────────────────────────────────────┤"
+            )
+            logger.info("│ Error: %-61s │", str(e)[:61])
+            logger.info(
+                "│ Equation: %-57s │",
+                (equation if "equation" in locals() else "N/A")[:57],
+            )
+            logger.info(
+                "└─────────────────────────────────────────────────────────────────────┘"
+            )
             rewards.append(0.0)
     return rewards
