@@ -101,7 +101,7 @@ Your arithmetic expression, e.g., 3 + 7 * 2 - 1
 There should ONLY be ONE <answer> block containing only the arithmetic expression."""
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": problem_description},
