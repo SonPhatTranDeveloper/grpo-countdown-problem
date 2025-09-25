@@ -1,5 +1,35 @@
 import random
+import re
 from dataclasses import dataclass
+
+
+def check_valid_arithmetic_expression(expression: str, result: int) -> bool:
+    """
+    Check if a string is a valid arithmetic expression.
+
+    With format
+
+    num1 op1 num2 op2 num3 op3 num4
+
+    with operators +, -, *, /
+
+    Args:
+        expression: The expression to check
+
+    Returns:
+        bool: True if valid arithmetic expression, False otherwise
+    """
+    # Regex pattern for: number operator number operator number operator number
+    # Number can only be positive integer (no negative numbers)
+    # Operators are +, -, *, /
+    # Spacing between numbers and operators is optional
+    pattern = (
+        r"^\s*(\d+)\s*([+\-*/])\s*(\d+)\s*([+\-*/])\s*(\d+)\s*([+\-*/])\s*(\d+)\s*$"
+    )
+
+    if bool(re.match(pattern, expression)):
+        return eval(expression) == result
+    return False
 
 
 @dataclass
