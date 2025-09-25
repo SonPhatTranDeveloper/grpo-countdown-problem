@@ -18,10 +18,8 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
-from src.utils.dataset_utils import (
-    load_csv_dataset,
-    map_problem_description_to_conversation,
-)
+from src.dataset import load_csv_dataset
+from src.dataset.grpo import map_problem_description_to_conversation
 from src.utils.rewards import (
     arithmetic_format_reward_function,
     correctness_reward_function,

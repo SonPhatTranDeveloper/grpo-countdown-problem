@@ -16,11 +16,11 @@ from typing import Any
 
 from dotenv import load_dotenv
 
+from src.dataset.grpo import get_reasoning_for_answer
 from src.utils.arithmetics import (
     ArithmeticProblemDescriptionGenerator,
     ArithmeticProblemGenerator,
 )
-from src.utils.dataset_utils import get_reasoning_for_answer
 
 # Load environment variables
 load_dotenv()
