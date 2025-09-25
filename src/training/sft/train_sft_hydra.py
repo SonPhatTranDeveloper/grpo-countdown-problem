@@ -101,13 +101,11 @@ def create_sft_config(cfg: DictConfig, output_dir: str) -> SFTConfig:
         per_device_train_batch_size=cfg.per_device_train_batch_size,
         # SFT-specific parameters
         max_length=cfg.max_length,
-        packing=cfg.packing,
         # Logging and saving
         report_to=cfg.report_to,
         logging_steps=cfg.logging_steps,
         save_strategy=cfg.save_strategy,
         save_steps=cfg.save_steps,
-        eval_strategy=cfg.eval_strategy,
     )
 
 
