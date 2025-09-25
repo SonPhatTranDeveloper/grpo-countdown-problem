@@ -86,7 +86,7 @@ def create_sft_config(
     num_train_epochs: int = 1,
     per_device_train_batch_size: int = 4,
     gradient_accumulation_steps: int = 4,
-    max_seq_length: int = 2048,
+    max_length: int = 2048,
     save_steps: int = 50,
     logging_steps: int = 1,
 ) -> SFTConfig:
@@ -99,7 +99,7 @@ def create_sft_config(
         num_train_epochs: Number of training epochs
         per_device_train_batch_size: Batch size per device
         gradient_accumulation_steps: Steps to accumulate gradients
-        max_seq_length: Maximum sequence length
+        max_length: Maximum sequence length
         save_steps: Steps between model saves
         logging_steps: Steps between log outputs
 
@@ -119,7 +119,7 @@ def create_sft_config(
         bf16=True,
         per_device_train_batch_size=per_device_train_batch_size,
         # SFT-specific parameters
-        max_seq_length=max_seq_length,
+        max_length=max_length,
         packing=False,
         # Logging and saving
         report_to=["tensorboard"],
@@ -236,7 +236,7 @@ def main() -> None:
         help="Gradient accumulation steps",
     )
     parser.add_argument(
-        "--max_seq_length",
+        "--max_length",
         type=int,
         default=2048,
         help="Maximum sequence length",
@@ -281,7 +281,7 @@ def main() -> None:
         num_train_epochs=args.num_train_epochs,
         per_device_train_batch_size=args.per_device_train_batch_size,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
-        max_seq_length=args.max_seq_length,
+        max_length=args.max_length,
         save_steps=args.save_steps,
         logging_steps=args.logging_steps,
     )

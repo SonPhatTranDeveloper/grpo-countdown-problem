@@ -100,7 +100,7 @@ def create_sft_config(cfg: DictConfig, output_dir: str) -> SFTConfig:
         bf16=cfg.bf16,
         per_device_train_batch_size=cfg.per_device_train_batch_size,
         # SFT-specific parameters
-        max_seq_length=cfg.max_seq_length,
+        max_length=cfg.max_length,
         packing=cfg.packing,
         # Logging and saving
         report_to=cfg.report_to,
