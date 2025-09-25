@@ -19,7 +19,7 @@ from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
 from src.dataset import load_csv_dataset
-from src.dataset.grpo import map_problem_description_to_conversation
+from src.dataset.grpo import map_problem_description_to_conversation_grpo
 from src.utils.rewards import (
     arithmetic_format_reward_function,
     correctness_reward_function,
@@ -44,7 +44,7 @@ def load_train_dataset(cfg: DictConfig) -> Dataset:
         Dataset: A datasets.Dataset ready for GRPO training
     """
     raw_dataset: Dataset = load_csv_dataset(
-        cfg.file_path, cfg.split, map_problem_description_to_conversation
+        cfg.file_path, cfg.split, map_problem_description_to_conversation_grpo
     )
     raw_dataset = raw_dataset.shuffle(seed=cfg.seed)
     train_dataset = raw_dataset.select(range(min(cfg.max_rows, len(raw_dataset))))

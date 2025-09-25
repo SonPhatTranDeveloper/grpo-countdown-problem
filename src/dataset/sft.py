@@ -1,4 +1,4 @@
-def map_problem_description_to_conversation(
+def map_problem_description_to_conversation_sft(
     row: dict[str, any],
 ) -> list[dict[str, any]]:
     """
