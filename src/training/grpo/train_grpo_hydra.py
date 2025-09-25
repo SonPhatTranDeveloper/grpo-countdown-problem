@@ -14,7 +14,7 @@ from pathlib import Path
 import hydra
 from datasets import Dataset
 from omegaconf import DictConfig, OmegaConf
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, PeftModel, get_peft_model
 from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
@@ -52,30 +52,43 @@ def load_train_dataset(cfg: DictConfig) -> Dataset:
     return train_dataset
 
 
-def create_lora_model(cfg: DictConfig) -> PreTrainedModel:
+def create_lora_model(
+    cfg: DictConfig, resume_from_checkpoint: str | None = None
+) -> PreTrainedModel:
     """
     Create a base causal LM and wrap it with LoRA adapters.
+    Optionally load existing LoRA adapters for continued training.
 
     Args:
         cfg: Model configuration
+        resume_from_checkpoint: Path to existing LoRA checkpoint to resume from
 
     Returns:
         PreTrainedModel: A transformers.PreTrainedModel with LoRA adapters applied
     """
-    model = AutoModelForCausalLM.from_pretrained(
+    # Load base model
+    base_model = AutoModelForCausalLM.from_pretrained(
         cfg.model_id,
         device_map=cfg.device_map,
     )
 
-    lora_cfg = LoraConfig(
-        r=cfg.lora.r,
-        lora_alpha=cfg.lora.lora_alpha,
-        target_modules=cfg.lora.target_modules,
-        lora_dropout=cfg.lora.lora_dropout,
-        bias=cfg.lora.bias,
-        task_type=cfg.lora.task_type,
-    )
-    model = get_peft_model(model, lora_cfg)
+    if resume_from_checkpoint and Path(resume_from_checkpoint).exists():
+        # Load existing LoRA adapters
+        logger.info("Loading existing LoRA adapters from: %s", resume_from_checkpoint)
+        model = PeftModel.from_pretrained(base_model, resume_from_checkpoint)
+    else:
+        # Create new LoRA adapters
+        logger.info("Creating new LoRA adapters")
+        lora_cfg = LoraConfig(
+            r=cfg.lora.r,
+            lora_alpha=cfg.lora.lora_alpha,
+            target_modules=cfg.lora.target_modules,
+            lora_dropout=cfg.lora.lora_dropout,
+            bias=cfg.lora.bias,
+            task_type=cfg.lora.task_type,
+        )
+        model = get_peft_model(base_model, lora_cfg)
+
     logger.info("Model with LoRA ready")
     return model
 
@@ -192,8 +205,9 @@ def main(cfg: DictConfig) -> None:
     # Load dataset
     train_dataset = load_train_dataset(cfg.dataset)
 
-    # Create model
-    model = create_lora_model(cfg.model)
+    # Create model - load existing LoRA if resuming
+    resume_path = cfg.get("resume_from_checkpoint", None)
+    model = create_lora_model(cfg.model, resume_path)
 
     # Create training configuration
     training_args = create_grpo_config(cfg.training, cfg.output_dir)
@@ -202,6 +216,9 @@ def main(cfg: DictConfig) -> None:
     trainer = create_trainer(
         model=model, train_dataset=train_dataset, args=training_args
     )
+
+    # Train with optional resume
+    trainer.train()
 
     # Train and save
     train_and_save(trainer=trainer, output_dir=cfg.output_dir)

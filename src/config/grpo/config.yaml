@@ -8,5 +8,8 @@ defaults:
 # Output directory for model checkpoints and logs
 output_dir: models/grpo
 
+# Resume from checkpoint
+resume_from_checkpoint: models/sft
+
 # Random seed for reproducibility
 seed: 42
