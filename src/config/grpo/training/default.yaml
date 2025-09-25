@@ -1,9 +1,9 @@
 # Default training configuration for GRPO
 
 # Learning parameters
-learning_rate: 5e-6
+learning_rate: 5e-7
 weight_decay: 0.01
-warmup_ratio: 0.1
+warmup_ratio: 0.01
 lr_scheduler_type: linear
 optim: adamw_8bit
 
