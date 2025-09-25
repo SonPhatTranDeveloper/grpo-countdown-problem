@@ -247,8 +247,22 @@ def mathematical_correctness_reward_function(
         list[float]: Reward scores (1.0 for correct, 0.0 for incorrect)
     """
     target = kwargs["correct_answer"]
+    first_nums = kwargs["num1"]
+    second_nums = kwargs["num2"]
+    third_nums = kwargs["num3"]
+    fourth_nums = kwargs["num4"]
+
     rewards = []
-    for completion, gt in zip(completions, target, strict=False):
+
+    for completion, gt, first_num, second_num, third_num, fourth_num in zip(
+        completions,
+        target,
+        first_nums,
+        second_nums,
+        third_nums,
+        fourth_nums,
+        strict=False,
+    ):
         try:
             # Check if the format is correct
             match = re.search(r"<answer>(.*?)<\/answer>", completion)
@@ -262,12 +276,13 @@ def mathematical_correctness_reward_function(
                 equation = equation.split("=")[0]
 
             # Extract all numbers from the equation
-            # used_numbers = [int(n) for n in re.findall(r'\d+', equation)]
+            used_numbers = [int(n) for n in re.findall(r"\d+", equation)]
 
             # Check if all numbers are used exactly once
-            # if sorted(used_numbers) != sorted(numbers):
-            #     rewards.append(0.0)
-            #     continue
+            correct_numbers = [first_num, second_num, third_num, fourth_num]
+            if sorted(used_numbers) != sorted(correct_numbers):
+                rewards.append(0.0)
+                continue
 
             # Define a regex pattern that only allows numbers, operators, and whitespace
             allowed_pattern = r"^[\d+\-*/.\s]+$"

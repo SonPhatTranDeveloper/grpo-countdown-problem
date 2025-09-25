@@ -3,7 +3,7 @@
 Script to generate a CSV file containing arithmetic problems for training data.
 
 This script uses the arithmetic utilities to generate problems and creates a CSV
-with columns: id, problem_description, and correct_answer.
+with columns: id, problem_description, correct_answer, num1, num2, num3, num4.
 """
 
 import argparse
@@ -63,6 +63,10 @@ def generate_training_data(num_problems: int) -> list[dict[str, Any]]:
             "id": generated_count + 1,
             "problem_description": problem_description,
             "correct_answer": correct_answer,
+            "num1": problem.num_1,
+            "num2": problem.num_2,
+            "num3": problem.num_3,
+            "num4": problem.num_4,
         }
 
         training_data.append(training_entry)
@@ -101,7 +105,15 @@ def save_to_csv(training_data: list[dict[str, Any]], output_file: Path) -> None:
     logger.info(f"Saving {len(training_data)} problems to {output_file}")
 
     with open(output_file, "w", newline="", encoding="utf-8") as csvfile:
-        fieldnames = ["id", "problem_description", "correct_answer"]
+        fieldnames = [
+            "id",
+            "problem_description",
+            "correct_answer",
+            "num1",
+            "num2",
+            "num3",
+            "num4",
+        ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         # Write header
