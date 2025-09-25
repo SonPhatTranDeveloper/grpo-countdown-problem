@@ -9,15 +9,15 @@ optim: adamw_8bit
 
 # Training parameters
 num_train_epochs: 1
-per_device_train_batch_size: 8
-gradient_accumulation_steps: 8
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 16
 bf16: true
 remove_unused_columns: false
 
 # Generation parameters
 temperature: 1.0
 max_completion_length: 2048
-num_generations: 8
+num_generations: 16
 max_prompt_length: 4096
 
 # Logging and saving
