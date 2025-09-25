@@ -246,16 +246,16 @@ def mathematical_correctness_reward_function(
     Returns:
         list[float]: Reward scores (1.0 for correct, 0.0 for incorrect)
     """
+    completions = [completion[-1]["content"] for completion in completions]
     target = kwargs["correct_answer"]
     first_nums = kwargs["num1"]
     second_nums = kwargs["num2"]
     third_nums = kwargs["num3"]
     fourth_nums = kwargs["num4"]
-
     rewards = []
 
     # Display completions
-    logger.info("Completions:\n%s", completions[0][-1]["content"])
+    logger.info("Completions:\n%s", completions[0])
 
     for completion, gt, first_num, second_num, third_num, fourth_num in zip(
         completions,
