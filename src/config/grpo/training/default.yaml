@@ -2,14 +2,14 @@
 
 # Learning parameters
 learning_rate: 5e-6
-warmup_ratio: 0.01
+weight_decay: 0.01
+warmup_ratio: 0.1
 lr_scheduler_type: linear
 optim: adamw_8bit
-beta: 0.001
 
 # Training parameters
 num_train_epochs: 1
-per_device_train_batch_size: 2
+per_device_train_batch_size: 1
 gradient_accumulation_steps: 8
 bf16: true
 remove_unused_columns: false

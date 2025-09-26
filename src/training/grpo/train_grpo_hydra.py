@@ -106,6 +106,7 @@ def create_grpo_config(cfg: DictConfig, output_dir: str) -> GRPOConfig:
         output_dir=output_dir,
         learning_rate=cfg.learning_rate,
         warmup_ratio=cfg.warmup_ratio,
+        weight_decay=cfg.weight_decay,
         lr_scheduler_type=cfg.lr_scheduler_type,
         optim=cfg.optim,
         remove_unused_columns=cfg.remove_unused_columns,
@@ -114,7 +115,6 @@ def create_grpo_config(cfg: DictConfig, output_dir: str) -> GRPOConfig:
         bf16=cfg.bf16,
         per_device_train_batch_size=cfg.per_device_train_batch_size,
         temperature=cfg.temperature,
-        beta=cfg.beta,
         # Preprocessing controls
         max_completion_length=cfg.max_completion_length,
         num_generations=cfg.num_generations,
