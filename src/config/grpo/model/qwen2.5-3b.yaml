@@ -1,7 +1,7 @@
 # Qwen2.5-3B model configuration
 
 # Hugging Face model identifier
-model_id: Qwen/Qwen2.5-3B-Instruct
+model_id: Qwen/Qwen2.5-Math-1.5B
 
 # Device mapping strategy
 device_map: cuda
