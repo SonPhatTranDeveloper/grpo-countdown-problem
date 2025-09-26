@@ -2,7 +2,7 @@
 
 # Learning parameters
 learning_rate: 1e-6
-weight_decay: 0.01
+weight_decay: 0.0
 warmup_ratio: 0.1
 lr_scheduler_type: cosine
 optim: adamw_8bit
