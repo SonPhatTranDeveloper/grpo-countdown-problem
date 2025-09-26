@@ -136,12 +136,13 @@ def create_trainer(
     return trainer
 
 
-def train_and_save(trainer: SFTTrainer, output_dir: str) -> None:
+def train_and_save(trainer: SFTTrainer, model: PreTrainedModel, output_dir: str) -> None:
     """
     Run training and save the final model to disk.
 
     Args:
         trainer: The configured SFT trainer instance
+        model: The model to merge and save
         output_dir: Output directory to save the trained model
 
     Returns:
@@ -149,7 +150,8 @@ def train_and_save(trainer: SFTTrainer, output_dir: str) -> None:
     """
     train_result = trainer.train()
     logger.info("Training complete: %s", str(train_result))
-    trainer.save_model(output_dir)
+    merged = model.merge_and_unload()
+    merged.save_pretrained(output_dir)
     logger.info("Saved to %s", output_dir)
 
 
@@ -202,7 +204,7 @@ def main(cfg: DictConfig) -> None:
     )
 
     # Train and save
-    train_and_save(trainer=trainer, output_dir=cfg.output_dir)
+    train_and_save(trainer=trainer, model=model, output_dir=cfg.output_dir)
 
 
 if __name__ == "__main__":
