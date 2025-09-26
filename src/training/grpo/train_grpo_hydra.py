@@ -65,7 +65,7 @@ def create_lora_model(
         PreTrainedModel: A transformers.PreTrainedModel with LoRA adapters applied
     """
     # Load base model
-    base_model = AutoModelForCausalLM.from_pretrained(
+    model = AutoModelForCausalLM.from_pretrained(
         cfg.model_id,
         device_map=cfg.device_map,
     )
@@ -76,7 +76,7 @@ def create_lora_model(
             "Loading existing LoRA adapters and merging from: %s",
             resume_from_checkpoint,
         )
-        model = PeftModel.from_pretrained(base_model, resume_from_checkpoint)
+        model = PeftModel.from_pretrained(model, resume_from_checkpoint)
         model = model.merge_and_unload()
 
     # Create new LoRA adapters
