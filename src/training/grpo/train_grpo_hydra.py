@@ -14,7 +14,7 @@ from pathlib import Path
 import hydra
 from datasets import Dataset
 from omegaconf import DictConfig, OmegaConf
-from peft import LoraConfig, PeftModel, get_peft_model
+from peft import LoraConfig, PeftModel
 from transformers import AutoModelForCausalLM, PreTrainedModel
 from trl import GRPOConfig, GRPOTrainer
 
@@ -73,14 +73,13 @@ def create_lora_model(
     if resume_from_checkpoint and Path(resume_from_checkpoint).exists():
         # Load existing LoRA adapters
         logger.info(
-            "Loading existing LoRA adapters and merging from: %s",
+            "Loading existing LoRA adapters from: %s",
             resume_from_checkpoint,
         )
         model = PeftModel.from_pretrained(model, resume_from_checkpoint)
-        model = model.merge_and_unload()
 
     # Create new LoRA adapters
-    logger.info("Creating new LoRA adapters from merged model")
+    logger.info("Adding new LoRA adapters to model")
     lora_cfg = LoraConfig(
         r=cfg.lora.r,
         lora_alpha=cfg.lora.lora_alpha,
@@ -89,7 +88,7 @@ def create_lora_model(
         bias=cfg.lora.bias,
         task_type=cfg.lora.task_type,
     )
-    model = get_peft_model(model, lora_cfg)
+    model.add_adapter(lora_cfg)
 
     logger.info("Model with LoRA ready")
     return model
