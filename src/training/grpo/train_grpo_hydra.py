@@ -74,18 +74,19 @@ def create_lora_model(
         # Load existing LoRA adapters
         logger.info("Loading existing LoRA adapters from: %s", resume_from_checkpoint)
         model = PeftModel.from_pretrained(base_model, resume_from_checkpoint)
-    else:
-        # Create new LoRA adapters
-        logger.info("Creating new LoRA adapters")
-        lora_cfg = LoraConfig(
-            r=cfg.lora.r,
-            lora_alpha=cfg.lora.lora_alpha,
-            target_modules=cfg.lora.target_modules,
-            lora_dropout=cfg.lora.lora_dropout,
-            bias=cfg.lora.bias,
-            task_type=cfg.lora.task_type,
-        )
-        model = get_peft_model(base_model, lora_cfg)
+        model = model.merge_and_unload()
+
+    # Create new LoRA adapters
+    logger.info("Creating new LoRA adapters")
+    lora_cfg = LoraConfig(
+        r=cfg.lora.r,
+        lora_alpha=cfg.lora.lora_alpha,
+        target_modules=cfg.lora.target_modules,
+        lora_dropout=cfg.lora.lora_dropout,
+        bias=cfg.lora.bias,
+        task_type=cfg.lora.task_type,
+    )
+    model = get_peft_model(base_model, lora_cfg)
 
     logger.info("Model with LoRA ready")
     return model

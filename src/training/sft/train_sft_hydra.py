@@ -136,7 +136,9 @@ def create_trainer(
     return trainer
 
 
-def train_and_save(trainer: SFTTrainer, model: PreTrainedModel, output_dir: str) -> None:
+def train_and_save(
+    trainer: SFTTrainer, model: PreTrainedModel, output_dir: str
+) -> None:
     """
     Run training and save the final model to disk.
 
