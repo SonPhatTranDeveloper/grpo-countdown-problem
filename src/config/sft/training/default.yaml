@@ -1,7 +1,7 @@
 # Default training configuration for SFT
 
 # Learning parameters
-learning_rate: 5e-6
+learning_rate: 2e-5
 weight_decay: 0.01
 warmup_ratio: 0.1
 lr_scheduler_type: linear
