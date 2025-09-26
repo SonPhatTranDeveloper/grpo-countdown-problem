@@ -266,6 +266,7 @@ def mathematical_correctness_reward_function(
         fourth_nums,
         strict=False,
     ):
+        reward = 0.0
         try:
             # Check if the format is correct
             match = re.search(r"<answer>(.*?)<\/answer>", completion, re.DOTALL)
@@ -286,8 +287,11 @@ def mathematical_correctness_reward_function(
                 logger.info(
                     "└─────────────────────────────────────────────────────────────────────┘"
                 )
-                rewards.append(0.0)
+                rewards.append(reward)
                 continue
+
+            # Add reward
+            reward += 1.0
 
             # Extract the "answer" part from the completion
             equation = match.group(1).strip()
@@ -315,8 +319,11 @@ def mathematical_correctness_reward_function(
                 logger.info(
                     "└─────────────────────────────────────────────────────────────────────┘"
                 )
-                rewards.append(0.0)
+                rewards.append(reward)
                 continue
+
+            # Add reward
+            reward += 1.0
 
             # Define a regex pattern that only allows numbers, operators, and whitespace
             allowed_pattern = r"^[\d+\-*/.\s]+$"
@@ -334,8 +341,11 @@ def mathematical_correctness_reward_function(
                 logger.info(
                     "└─────────────────────────────────────────────────────────────────────┘"
                 )
-                rewards.append(0.0)
+                rewards.append(reward)
                 continue
+
+            # Add reward
+            reward += 1.0
 
             # Evaluate the equation with restricted globals and locals
             result = eval(equation, {"__builtins__": None}, {})
@@ -358,7 +368,8 @@ def mathematical_correctness_reward_function(
                 logger.info(
                     "└─────────────────────────────────────────────────────────────────────┘"
                 )
-                rewards.append(1.0)
+                reward += 4.0
+                rewards.append(reward)
             else:
                 logger.info(
                     "┌─────────────────────────────────────────────────────────────────────┐"
@@ -379,7 +390,7 @@ def mathematical_correctness_reward_function(
                 logger.info(
                     "└─────────────────────────────────────────────────────────────────────┘"
                 )
-                rewards.append(0.0)
+                rewards.append(reward)
         except Exception as e:
             # If evaluation fails, reward is 0
             logger.info(
@@ -399,5 +410,5 @@ def mathematical_correctness_reward_function(
             logger.info(
                 "└─────────────────────────────────────────────────────────────────────┘"
             )
-            rewards.append(0.0)
+            rewards.append(reward)
     return rewards
