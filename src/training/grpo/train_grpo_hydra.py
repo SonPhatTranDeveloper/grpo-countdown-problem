@@ -72,7 +72,10 @@ def create_lora_model(
 
     if resume_from_checkpoint and Path(resume_from_checkpoint).exists():
         # Load existing LoRA adapters
-        logger.info("Loading existing LoRA adapters from: %s", resume_from_checkpoint)
+        logger.info(
+            "Loading existing LoRA adapters and merging from: %s",
+            resume_from_checkpoint,
+        )
         model = PeftModel.from_pretrained(base_model, resume_from_checkpoint)
         model = model.merge_and_unload()
 
