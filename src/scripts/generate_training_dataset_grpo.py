@@ -15,6 +15,7 @@ from typing import Any
 from src.utils.arithmetics import (
     ArithmeticProblemDescriptionGenerator,
     ArithmeticProblemGenerator,
+    Mode,
 )
 
 # Configure logging
@@ -24,7 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def generate_training_data(num_problems: int) -> list[dict[str, Any]]:
+def generate_training_data(num_problems: int, mode: Mode) -> list[dict[str, Any]]:
     """
     Generate training data with arithmetic problems.
 
@@ -34,7 +35,7 @@ def generate_training_data(num_problems: int) -> list[dict[str, Any]]:
     Returns:
         List[Dict[str, Any]]: List of dictionaries containing training data
     """
-    problem_generator = ArithmeticProblemGenerator()
+    problem_generator = ArithmeticProblemGenerator(mode=mode)
     description_generator = ArithmeticProblemDescriptionGenerator()
 
     training_data = []
@@ -142,6 +143,22 @@ def main() -> None:
         "--output_file", type=str, required=True, help="Path to the output CSV file"
     )
 
+    parser.add_argument(
+        "--mode", type=str, required=True, help="Mode of the problems to generate"
+    )
+    parser.add_argument(
+        "--min_num",
+        type=int,
+        required=True,
+        help="Minimum number to use in the problems",
+    )
+    parser.add_argument(
+        "--max_num",
+        type=int,
+        required=True,
+        help="Maximum number to use in the problems",
+    )
+
     args = parser.parse_args()
 
     # Validate arguments
@@ -152,7 +169,7 @@ def main() -> None:
     output_path = Path(args.output_file)
 
     # Generate training data
-    training_data = generate_training_data(args.num_problems)
+    training_data = generate_training_data(args.num_problems, args.mode)
 
     if not training_data:
         logger.error("Failed to generate any training data")

@@ -20,6 +20,7 @@ from src.dataset.grpo import get_reasoning_for_answer
 from src.utils.arithmetics import (
     ArithmeticProblemDescriptionGenerator,
     ArithmeticProblemGenerator,
+    Mode,
 )
 
 # Load environment variables
@@ -75,7 +76,7 @@ def generate_single_problem_with_reasoning(
 
 
 def generate_training_data(
-    num_problems: int, max_workers: int = 8
+    num_problems: int, mode: Mode, max_workers: int = 8
 ) -> list[dict[str, Any]]:
     """
     Generate training data with arithmetic problems and reasoning using threading.
@@ -87,7 +88,7 @@ def generate_training_data(
     Returns:
         List[Dict[str, Any]]: List of dictionaries containing training data with reasoning
     """
-    problem_generator = ArithmeticProblemGenerator()
+    problem_generator = ArithmeticProblemGenerator(mode=mode)
     description_generator = ArithmeticProblemDescriptionGenerator()
 
     training_data = []
@@ -231,6 +232,10 @@ def main() -> None:
         help="Maximum number of worker threads for parallel processing (default: 8)",
     )
 
+    parser.add_argument(
+        "--mode", type=str, required=True, help="Mode of the problems to generate"
+    )
+
     args = parser.parse_args()
 
     # Validate arguments
@@ -245,7 +250,9 @@ def main() -> None:
     output_path = Path(args.output_file)
 
     # Generate training data
-    training_data = generate_training_data(args.num_problems, args.max_workers)
+    training_data = generate_training_data(
+        args.num_problems, args.mode, args.max_workers
+    )
 
     if not training_data:
         logger.error("Failed to generate any training data")

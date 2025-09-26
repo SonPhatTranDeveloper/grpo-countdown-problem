@@ -1,6 +1,7 @@
 import random
 import re
 from dataclasses import dataclass
+from enum import Enum
 
 
 def check_valid_arithmetic_expression(expression: str, result: int) -> bool:
@@ -41,6 +42,11 @@ class ArithmeticProblem:
     result: int
 
 
+class Mode(Enum):
+    ALL = "all"  # All operators are allowed
+    MUL_DIV = "mul_div"  # Only multiplication and division are allowed
+
+
 class ArithmeticProblemGenerator:
     def __init__(
         self,
@@ -50,6 +56,7 @@ class ArithmeticProblemGenerator:
         result_max: int = 1000,
         max_attempts: int = 100,
         operators: tuple[str] = ("+", "-", "*", "/"),
+        mode: Mode = Mode.ALL,
     ):
         """
         Initialize the arithmetic problem generator.
@@ -58,6 +65,7 @@ class ArithmeticProblemGenerator:
             min_num: The minimum number to use in the arithmetic problem
             max_num: The maximum number to use in the arithmetic problem
             operators: The operators to use in the arithmetic problem
+            mode: The mode of the arithmetic problem
         """
         self.min_num = min_num
         self.max_num = max_num
@@ -65,6 +73,7 @@ class ArithmeticProblemGenerator:
         self.result_max = result_max
         self.operators = operators
         self.max_attempts = max_attempts
+        self.mode = mode
 
     def _generate_random_number(self) -> int:
         return random.randint(self.min_num, self.max_num)
@@ -85,7 +94,7 @@ class ArithmeticProblemGenerator:
         Returns:
             ArithmeticProblem: The generated arithmetic problem
         """
-        max_attempts = 100
+        max_attempts = 1_000
 
         for _ in range(max_attempts):
             # Generate four random numbers
@@ -98,6 +107,14 @@ class ArithmeticProblemGenerator:
             op1 = self._generate_random_operator()
             op2 = self._generate_random_operator()
             op3 = self._generate_random_operator()
+
+            if (
+                self.mode == Mode.MUL_DIV
+                and op1 not in ("*", "/")
+                and op2 not in ("*", "/")
+                and op3 not in ("*", "/")
+            ):
+                continue
 
             # Try to evaluate the expression and ensure it results in an integer
             result = self._evaluate_expression(
