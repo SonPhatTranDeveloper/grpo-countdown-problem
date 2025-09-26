@@ -4,7 +4,7 @@
 model_id: Qwen/Qwen2.5-3B-Instruct
 
 # Device mapping strategy
-device_map: auto
+device_map: cuda
 
 # LoRA configuration
 lora:
