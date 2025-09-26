@@ -80,7 +80,7 @@ def create_lora_model(
         model = model.merge_and_unload()
 
     # Create new LoRA adapters
-    logger.info("Creating new LoRA adapters")
+    logger.info("Creating new LoRA adapters from merged model")
     lora_cfg = LoraConfig(
         r=cfg.lora.r,
         lora_alpha=cfg.lora.lora_alpha,
@@ -89,7 +89,7 @@ def create_lora_model(
         bias=cfg.lora.bias,
         task_type=cfg.lora.task_type,
     )
-    model = get_peft_model(base_model, lora_cfg)
+    model = get_peft_model(model, lora_cfg)
 
     logger.info("Model with LoRA ready")
     return model
