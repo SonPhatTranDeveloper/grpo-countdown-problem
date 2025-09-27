@@ -74,7 +74,7 @@ class GRPOModelInference:
         # Check if LoRA adapters exist
         if Path(self.model_path).exists():
             logger.info(f"Loading LoRA adapters from: {self.model_path}")
-            self.model = PeftModel.from_pretrained(base_model, self.model_path)
+            self.model = PeftModel.from_pretrained(base_model, "models/grpo/checkpoint-1150/adapter_model.safetensors")
             self.model = self.model.merge_and_unload()
         else:
             logger.warning(f"LoRA path {self.model_path} not found, using base model")
@@ -93,10 +93,11 @@ class GRPOModelInference:
         Returns:
             List of conversation messages
         """
-        row = {
-            "problem_description": problem_description,
-        }
-        result = map_problem_description_to_conversation_grpo(row)
+        result = map_problem_description_to_conversation_grpo(
+            {
+                "problem_description": problem_description,
+            }
+        )
         return result["prompt"]
 
     def _generate_response(
@@ -124,8 +125,6 @@ class GRPOModelInference:
         formatted_prompt = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-
-        print(formatted_prompt)
 
         # Tokenize the input
         inputs = self.tokenizer(
