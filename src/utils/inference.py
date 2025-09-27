@@ -67,7 +67,7 @@ class GRPOModelInference:
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_model_id)
 
         # Load base model
-        base_model = AutoModelForCausalLM.from_pretrained(
+        self.model = AutoModelForCausalLM.from_pretrained(
             self.base_model_id,
             dtype=self.dtype,
             device_map=self.device,
@@ -76,13 +76,13 @@ class GRPOModelInference:
         # Load SFT model
         if self.sft_model_path:
             logger.info(f"Loading SFT LoRA adapters from: {self.sft_model_path}")
-            model = PeftModel.from_pretrained(base_model, self.sft_model_path)
-            model = model.merge_and_unload()
+            self.model = PeftModel.from_pretrained(self.model, self.sft_model_path)
+            self.model = self.model.merge_and_unload()
 
         # Check if LoRA adapters exist
         if self.grpo_model_path:
             logger.info(f"Loading GRPO LoRA adapters from: {self.grpo_model_path}")
-            self.model = PeftModel.from_pretrained(model, self.grpo_model_path)
+            self.model = PeftModel.from_pretrained(self.model, self.grpo_model_path)
             self.model = self.model.merge_and_unload()
 
         self.model.eval()
