@@ -365,7 +365,7 @@ def main():
         help="Path to save detailed results CSV",
     )
     parser.add_argument(
-        "load_grpo",
+        "--load_grpo",
         type=bool,
         default=True,
         help="Whether to load the GRPO model",
