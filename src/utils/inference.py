@@ -96,7 +96,8 @@ class GRPOModelInference:
         row = {
             "problem_description": problem_description,
         }
-        return map_problem_description_to_conversation_grpo(row)
+        result = map_problem_description_to_conversation_grpo(row)
+        return result["prompt"]
 
     def _generate_response(
         self,
@@ -123,6 +124,8 @@ class GRPOModelInference:
         formatted_prompt = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
+
+        print(formatted_prompt)
 
         # Tokenize the input
         inputs = self.tokenizer(
