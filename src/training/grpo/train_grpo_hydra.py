@@ -159,7 +159,9 @@ def create_trainer(
     return trainer
 
 
-def train_and_save(trainer: GRPOTrainer, output_dir: str) -> None:
+def train_and_save(
+    trainer: GRPOTrainer, output_dir: str, resume_from_checkpoint: str | None = None
+) -> None:
     """
     Run training and save the final model to disk.
 
@@ -170,7 +172,7 @@ def train_and_save(trainer: GRPOTrainer, output_dir: str) -> None:
     Returns:
         None
     """
-    train_result = trainer.train(resume_from_checkpoint=output_dir)
+    train_result = trainer.train(resume_from_checkpoint=resume_from_checkpoint)
     logger.info("Training complete: %s", str(train_result))
     trainer.save_model(output_dir)
     logger.info("Saved to %s", output_dir)
@@ -206,7 +208,7 @@ def main(cfg: DictConfig) -> None:
     train_dataset = load_train_dataset(cfg.dataset)
 
     # Create model - load existing LoRA if resuming
-    resume_path = cfg.get("resume_from_checkpoint", None)
+    resume_path = cfg.get("resume_from_checkpoint_sft", None)
     model = create_lora_model(cfg.model, resume_path)
 
     # Create training configuration
@@ -218,7 +220,11 @@ def main(cfg: DictConfig) -> None:
     )
 
     # Train and save
-    train_and_save(trainer=trainer, output_dir=cfg.output_dir)
+    train_and_save(
+        trainer=trainer,
+        output_dir=cfg.output_dir,
+        resume_from_checkpoint=cfg.resume_from_checkpoint_grpo,
+    )
 
 
 if __name__ == "__main__":

@@ -9,7 +9,8 @@ defaults:
 output_dir: models/grpo
 
 # Resume from checkpoint
-resume_from_checkpoint: models/sft
+resume_from_checkpoint_sft: models/sft
+resume_from_checkpoint_grpo: models/grpo/checkpoint-650
 
 # Random seed for reproducibility
 seed: 42
