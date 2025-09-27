@@ -166,7 +166,7 @@ def evaluate_prediction(
 
 def calculate_accuracy(
     csv_path: str,
-    sft_model_path: str,
+    sft_model_path: str | None,
     grpo_model_path: str | None,
     base_model_id: str = "Qwen/Qwen2.5-Math-1.5B",
     device: str = "auto",
@@ -365,6 +365,11 @@ def main():
         help="Path to save detailed results CSV",
     )
     parser.add_argument(
+        "--no_sft",
+        action="store_true",
+        help="Skip loading the SFT model (use only base model)",
+    )
+    parser.add_argument(
         "--no_grpo",
         action="store_true",
         help="Skip loading the GRPO model (use only SFT model)",
@@ -378,7 +383,7 @@ def main():
     # Calculate accuracy
     metrics = calculate_accuracy(
         csv_path=args.csv_path,
-        sft_model_path=args.sft_model_path,
+        sft_model_path=args.sft_model_path if not args.no_sft else None,
         grpo_model_path=args.grpo_model_path if not args.no_grpo else None,
         base_model_id=args.base_model_id,
         device=args.device,
