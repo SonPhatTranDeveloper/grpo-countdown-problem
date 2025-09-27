@@ -29,7 +29,8 @@ def main():
     """Main function to run the model inference script."""
     # Create model inference object
     model_inference = GRPOModelInference(
-        model_path="models/grpo/",
+        sft_model_path="models/sft/",
+        grpo_model_path="models/grpo/",
         base_model_id="Qwen/Qwen2.5-Math-1.5B",
         device="auto",
         dtype=torch.float16,
