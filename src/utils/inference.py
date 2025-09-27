@@ -33,8 +33,8 @@ class GRPOModelInference:
 
     def __init__(
         self,
-        sft_model_path: str,
-        grpo_model_path: str,
+        sft_model_path: str | None = None,
+        grpo_model_path: str | None = None,
         base_model_id: str = "Qwen/Qwen2.5-Math-1.5B",
         device: str = "auto",
         dtype: torch.dtype = torch.float16,
@@ -74,14 +74,16 @@ class GRPOModelInference:
         )
 
         # Load SFT model
-        logger.info(f"Loading SFT LoRA adapters from: {self.sft_model_path}")
-        model = PeftModel.from_pretrained(base_model, self.sft_model_path)
-        model = model.merge_and_unload()
+        if self.sft_model_path:
+            logger.info(f"Loading SFT LoRA adapters from: {self.sft_model_path}")
+            model = PeftModel.from_pretrained(base_model, self.sft_model_path)
+            model = model.merge_and_unload()
 
         # Check if LoRA adapters exist
-        logger.info(f"Loading GRPO LoRA adapters from: {self.grpo_model_path}")
-        self.model = PeftModel.from_pretrained(model, self.grpo_model_path)
-        self.model = self.model.merge_and_unload()
+        if self.grpo_model_path:
+            logger.info(f"Loading GRPO LoRA adapters from: {self.grpo_model_path}")
+            self.model = PeftModel.from_pretrained(model, self.grpo_model_path)
+            self.model = self.model.merge_and_unload()
 
         self.model.eval()
         logger.info("Model loaded successfully")

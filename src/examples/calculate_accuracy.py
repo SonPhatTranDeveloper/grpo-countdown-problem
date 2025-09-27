@@ -364,6 +364,12 @@ def main():
         default=None,
         help="Path to save detailed results CSV",
     )
+    parser.add_argument(
+        "load_grpo",
+        type=bool,
+        default=True,
+        help="Whether to load the GRPO model",
+    )
 
     args = parser.parse_args()
 
@@ -374,7 +380,7 @@ def main():
     metrics = calculate_accuracy(
         csv_path=args.csv_path,
         sft_model_path=args.sft_model_path,
-        grpo_model_path=args.grpo_model_path,
+        grpo_model_path=args.grpo_model_path if args.load_grpo else None,
         base_model_id=args.base_model_id,
         device=args.device,
         dtype=dtype,
