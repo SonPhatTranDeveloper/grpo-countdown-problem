@@ -176,7 +176,9 @@ def calculate_accuracy(
     valid_format_predictions = 0
 
     logger.info("Starting evaluation...")
-    for _, row in tqdm(df.iterrows(), total=len(df), desc="Evaluating"):
+    pbar = tqdm(df.iterrows(), total=len(df), desc="Evaluating")
+
+    for idx, (_, row) in enumerate(pbar):
         # Perform inference
         response, extracted_answer, _ = model_inference.solve_problem(
             problem_description=row["problem_description"],
@@ -209,6 +211,19 @@ def calculate_accuracy(
             correct_predictions += 1
         if evaluation["is_valid_format"]:
             valid_format_predictions += 1
+
+        # Update progress bar with intermediate results
+        current_accuracy = correct_predictions / (idx + 1) if (idx + 1) > 0 else 0
+        current_valid_rate = (
+            valid_format_predictions / (idx + 1) if (idx + 1) > 0 else 0
+        )
+        pbar.set_postfix(
+            {
+                "Acc": f"{current_accuracy:.3f}",
+                "Valid": f"{current_valid_rate:.3f}",
+                "Correct": f"{correct_predictions}/{idx + 1}",
+            }
+        )
 
     # Calculate metrics
     total_samples = len(results)
