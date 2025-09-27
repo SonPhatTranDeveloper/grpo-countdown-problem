@@ -160,7 +160,10 @@ def create_trainer(
 
 
 def train_and_save(
-    trainer: GRPOTrainer, output_dir: str, resume_from_checkpoint: str | None = None
+    trainer: GRPOTrainer,
+    output_dir: str,
+    resume_from_checkpoint: str | None = None,
+    save_before_training: bool = True,
 ) -> None:
     """
     Run training and save the final model to disk.
@@ -168,10 +171,14 @@ def train_and_save(
     Args:
         trainer: The configured GRPO trainer instance
         output_dir: Output directory to save the trained model
+        resume_from_checkpoint: Path to resume training from
+        save_before_training: Save the model before training
 
     Returns:
         None
     """
+    if save_before_training:
+        trainer.save_model(output_dir)
     train_result = trainer.train(resume_from_checkpoint=resume_from_checkpoint)
     logger.info("Training complete: %s", str(train_result))
     trainer.save_model(output_dir)
@@ -224,6 +231,7 @@ def main(cfg: DictConfig) -> None:
         trainer=trainer,
         output_dir=cfg.output_dir,
         resume_from_checkpoint=cfg.resume_from_checkpoint_grpo,
+        save_before_training=cfg.save_before_training,
     )
 
 

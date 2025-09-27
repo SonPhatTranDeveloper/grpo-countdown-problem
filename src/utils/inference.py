@@ -74,7 +74,7 @@ class GRPOModelInference:
         # Check if LoRA adapters exist
         if Path(self.model_path).exists():
             logger.info(f"Loading LoRA adapters from: {self.model_path}")
-            self.model = PeftModel.from_pretrained(base_model, "models/grpo/checkpoint-1150/adapter_model.safetensors")
+            self.model = PeftModel.from_pretrained(base_model, self.model_path)
             self.model = self.model.merge_and_unload()
         else:
             logger.warning(f"LoRA path {self.model_path} not found, using base model")
