@@ -169,7 +169,7 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
             return_tensors="pt",
             padding=True,
             truncation=True,
-            max_length=2048,
+            max_length=4096,
         )
 
         # Move to device
