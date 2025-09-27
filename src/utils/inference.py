@@ -17,6 +17,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 # Add src to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
+from src.dataset.grpo import map_problem_description_to_conversation_grpo
 from src.utils.rewards import _is_valid_arithmetic_expression
 from src.utils.string_helper import extract_answer
 
@@ -62,15 +63,12 @@ class GRPOModelInference:
 
         # Load tokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_model_id)
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
 
         # Load base model
         base_model = AutoModelForCausalLM.from_pretrained(
             self.base_model_id,
             dtype=self.dtype,
             device_map=self.device,
-            trust_remote_code=True,
         )
 
         # Check if LoRA adapters exist
@@ -95,47 +93,10 @@ class GRPOModelInference:
         Returns:
             List of conversation messages
         """
-        system_prompt = """
-You are an expert mathematician specializing in arithmetic countdown problems. Your task is to find arithmetic expressions using exactly four given numbers and basic operators (+, -, *, /) to reach a target result.
-
-**Your approach must be:**
-1. Use **a single <think> block** to show your systematic reasoning process
-2. Consider different combinations of numbers and operators
-3. Apply proper order of operations (multiplication and division before addition and subtraction)
-4. Verify your calculations step by step
-5. Provide your final arithmetic expression in the <answer> block
-6. There should ONLY be ONE <answer> block containing only the arithmetic expression.
-
-**Rules:**
-- Use each of the four given numbers exactly once
-- Only use operators: +, -, *, / (use '*' for multiplication)
-- The expression must equal the target result exactly
-- Show clear mathematical reasoning in your thinking
-- Your final answer must be a valid arithmetic expression
-
-**Format:**
-<think>
-Analyze the numbers and target result, try different combinations and operations, calculate and verify results step by step.
-</think>
-<answer>
-(Your arithmetic expression, e.g., "3 + 7 * 2 - 1")
-</answer>
-
-Example:
-<think>
-Analyze the numbers and target result, try different combinations and operations, calculate and verify results step by step.
-</think>
-<answer>
-3 + 7 * 2 - 1
-</answer>
-
-There should ONLY be ONE <answer> block containing only the arithmetic expression.
-"""
-
-        return [
-            {"role": "system", "content": system_prompt.strip()},
-            {"role": "user", "content": problem_description},
-        ]
+        row = {
+            "problem_description": problem_description,
+        }
+        return map_problem_description_to_conversation_grpo(row)
 
     def _generate_response(
         self,
@@ -162,8 +123,6 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
         formatted_prompt = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-
-        print(formatted_prompt)
 
         # Tokenize the input
         inputs = self.tokenizer(
