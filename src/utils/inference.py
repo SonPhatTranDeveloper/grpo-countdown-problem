@@ -35,7 +35,7 @@ class GRPOModelInference:
         model_path: str,
         base_model_id: str = "Qwen/Qwen2.5-Math-1.5B",
         device: str = "auto",
-        torch_dtype: torch.dtype = torch.float16,
+        dtype: torch.dtype = torch.float16,
     ):
         """
         Initialize the model inference class.
@@ -44,12 +44,12 @@ class GRPOModelInference:
             model_path: Path to the trained LoRA model directory
             base_model_id: Base model identifier from Hugging Face
             device: Device to load the model on
-            torch_dtype: Torch data type for the model
+            dtype: Torch data type for the model
         """
         self.model_path = model_path
         self.base_model_id = base_model_id
         self.device = device
-        self.torch_dtype = torch_dtype
+        self.dtype = dtype
 
         self.tokenizer = None
         self.model = None
@@ -68,7 +68,7 @@ class GRPOModelInference:
         # Load base model
         base_model = AutoModelForCausalLM.from_pretrained(
             self.base_model_id,
-            torch_dtype=self.torch_dtype,
+            dtype=self.dtype,
             device_map=self.device,
             trust_remote_code=True,
         )
