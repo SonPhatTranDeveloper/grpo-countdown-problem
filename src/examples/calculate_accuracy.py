@@ -8,6 +8,7 @@ and calculates the accuracy by comparing predicted answers with correct answers.
 
 import argparse
 import logging
+import re
 import sys
 from pathlib import Path
 
@@ -103,8 +104,6 @@ def check_numbers_usage(expression: str, required_numbers: list[int]) -> bool:
         return False
 
     # Extract all numbers from the expression
-    import re
-
     numbers_in_expression = re.findall(r"\b\d+\b", expression)
 
     # Convert to integers
