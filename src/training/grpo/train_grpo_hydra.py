@@ -170,7 +170,7 @@ def train_and_save(trainer: GRPOTrainer, output_dir: str) -> None:
     Returns:
         None
     """
-    train_result = trainer.train()
+    train_result = trainer.train(resume_from_checkpoint=output_dir)
     logger.info("Training complete: %s", str(train_result))
     trainer.save_model(output_dir)
     logger.info("Saved to %s", output_dir)
@@ -216,9 +216,6 @@ def main(cfg: DictConfig) -> None:
     trainer = create_trainer(
         model=model, train_dataset=train_dataset, args=training_args
     )
-
-    # Train with optional resume
-    trainer.train()
 
     # Train and save
     train_and_save(trainer=trainer, output_dir=cfg.output_dir)
