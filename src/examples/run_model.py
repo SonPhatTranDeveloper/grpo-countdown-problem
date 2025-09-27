@@ -77,7 +77,6 @@ class GRPOModelInference:
         if Path(self.model_path).exists():
             logger.info(f"Loading LoRA adapters from: {self.model_path}")
             self.model = PeftModel.from_pretrained(base_model, self.model_path)
-            # Merge adapters for faster inference
             self.model = self.model.merge_and_unload()
         else:
             logger.warning(f"LoRA path {self.model_path} not found, using base model")
@@ -239,7 +238,21 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
 
 def main():
     """Main function to run the model inference script."""
-    pass
+    # Create model inference object
+    model_inference = GRPOModelInference(
+        model_path="models/grpo",
+        base_model_id="Qwen/Qwen2.5-Math-1.5B",
+        device="auto",
+        torch_dtype=torch.float16,
+    )
+
+    # Solve problem
+    response, extracted_answer, is_valid = model_inference.solve_problem(
+        problem_description="Using the numbers 1, 2, 3, and 4, create an arithmetic expression that equals 10.",
+    )
+    logger.info(f"Response: {response}")
+    logger.info(f"Extracted Answer: {extracted_answer}")
+    logger.info(f"Valid Format: {is_valid}")
 
 
 if __name__ == "__main__":
