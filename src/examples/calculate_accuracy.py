@@ -88,6 +88,38 @@ def safe_eval_expression(expression: str) -> tuple[float | None, bool]:
         return None, False
 
 
+def check_numbers_usage(expression: str, required_numbers: list[int]) -> bool:
+    """
+    Check if the expression uses exactly the required numbers.
+
+    Args:
+        expression: The arithmetic expression to check
+        required_numbers: List of numbers that should be used exactly once each
+
+    Returns:
+        True if expression uses all required numbers exactly once, False otherwise
+    """
+    if not expression or not expression.strip():
+        return False
+
+    # Extract all numbers from the expression
+    import re
+
+    numbers_in_expression = re.findall(r"\b\d+\b", expression)
+
+    # Convert to integers
+    try:
+        numbers_in_expression = [int(num) for num in numbers_in_expression]
+    except ValueError:
+        return False
+
+    # Sort both lists for comparison
+    required_sorted = sorted(required_numbers)
+    found_sorted = sorted(numbers_in_expression)
+
+    return required_sorted == found_sorted
+
+
 def evaluate_prediction(
     predicted_answer: str, correct_answer: int, nums: list[int]
 ) -> dict:
@@ -107,6 +139,7 @@ def evaluate_prediction(
         "correct_answer": correct_answer,
         "is_correct": False,
         "is_valid_format": False,
+        "uses_all_numbers": False,
         "predicted_result": None,
         "correct_result": correct_answer,
     }
@@ -116,13 +149,17 @@ def evaluate_prediction(
     result["predicted_result"] = predicted_result
     result["is_valid_format"] = is_valid_predicted
 
+    # Check if all required numbers are used
+    uses_all_numbers = check_numbers_usage(predicted_answer, nums)
+    result["uses_all_numbers"] = uses_all_numbers
+
     # Log predicted and correct results
     logger.info(
-        f"Answered: {predicted_answer} - Predicted result: {predicted_result} - Correct result: {correct_answer}"
+        f"Answered: {predicted_answer} - Predicted result: {predicted_result} - Correct result: {correct_answer} - Uses all numbers: {uses_all_numbers}"
     )
 
-    # Check if prediction is correct
-    if is_valid_predicted and predicted_result is not None:
+    # Check if prediction is correct (must be valid format, use all numbers, and have correct result)
+    if is_valid_predicted and predicted_result is not None and uses_all_numbers:
         result["is_correct"] = abs(predicted_result - correct_answer) < 1e-6
 
     return result
@@ -179,6 +216,7 @@ def calculate_accuracy(
     results = []
     correct_predictions = 0
     valid_format_predictions = 0
+    uses_all_numbers_predictions = 0
 
     logger.info("Starting evaluation...")
     pbar = tqdm(df.iterrows(), total=len(df), desc="Evaluating")
@@ -216,6 +254,8 @@ def calculate_accuracy(
             correct_predictions += 1
         if evaluation["is_valid_format"]:
             valid_format_predictions += 1
+        if evaluation["uses_all_numbers"]:
+            uses_all_numbers_predictions += 1
 
         # Update progress bar with intermediate results
         current_accuracy = correct_predictions / (idx + 1) if (idx + 1) > 0 else 0
@@ -236,13 +276,18 @@ def calculate_accuracy(
     valid_format_rate = (
         valid_format_predictions / total_samples if total_samples > 0 else 0
     )
+    uses_all_numbers_rate = (
+        uses_all_numbers_predictions / total_samples if total_samples > 0 else 0
+    )
 
     metrics = {
         "total_samples": total_samples,
         "correct_predictions": correct_predictions,
         "valid_format_predictions": valid_format_predictions,
+        "uses_all_numbers_predictions": uses_all_numbers_predictions,
         "accuracy": accuracy,
         "valid_format_rate": valid_format_rate,
+        "uses_all_numbers_rate": uses_all_numbers_rate,
     }
 
     # Log results
@@ -250,9 +295,13 @@ def calculate_accuracy(
     logger.info(f"Total samples: {total_samples}")
     logger.info(f"Correct predictions: {correct_predictions}")
     logger.info(f"Valid format predictions: {valid_format_predictions}")
+    logger.info(f"Uses all numbers predictions: {uses_all_numbers_predictions}")
     logger.info(f"Accuracy: {accuracy:.4f} ({accuracy * 100:.2f}%)")
     logger.info(
         f"Valid format rate: {valid_format_rate:.4f} ({valid_format_rate * 100:.2f}%)"
+    )
+    logger.info(
+        f"Uses all numbers rate: {uses_all_numbers_rate:.4f} ({uses_all_numbers_rate * 100:.2f}%)"
     )
 
     # Save detailed results if requested
@@ -344,7 +393,16 @@ def main():
         f"Valid Format Rate: {metrics['valid_format_rate']:.4f} ({metrics['valid_format_rate'] * 100:.2f}%)"
     )
     print(
+        f"Uses All Numbers Rate: {metrics['uses_all_numbers_rate']:.4f} ({metrics['uses_all_numbers_rate'] * 100:.2f}%)"
+    )
+    print(
         f"Correct Predictions: {metrics['correct_predictions']}/{metrics['total_samples']}"
+    )
+    print(
+        f"Valid Format Predictions: {metrics['valid_format_predictions']}/{metrics['total_samples']}"
+    )
+    print(
+        f"Uses All Numbers Predictions: {metrics['uses_all_numbers_predictions']}/{metrics['total_samples']}"
     )
     print("=" * 50)
 
