@@ -163,6 +163,8 @@ There should ONLY be ONE <answer> block containing only the arithmetic expressio
             messages, tokenize=False, add_generation_prompt=True
         )
 
+        print(formatted_prompt)
+
         # Tokenize the input
         inputs = self.tokenizer(
             formatted_prompt,
