@@ -116,6 +116,11 @@ def evaluate_prediction(
     result["predicted_result"] = predicted_result
     result["is_valid_format"] = is_valid_predicted
 
+    # Log predicted and correct results
+    logger.info(
+        f"Answered: {predicted_answer} - Predicted result: {predicted_result} - Correct result: {correct_answer}"
+    )
+
     # Check if prediction is correct
     if is_valid_predicted and predicted_result is not None:
         result["is_correct"] = abs(predicted_result - correct_answer) < 1e-6
@@ -130,7 +135,7 @@ def calculate_accuracy(
     base_model_id: str = "Qwen/Qwen2.5-Math-1.5B",
     device: str = "auto",
     dtype: torch.dtype = torch.float16,
-    max_new_tokens: int = 512,
+    max_new_tokens: int = 4096,
     temperature: float = 0.7,
     max_samples: int | None = None,
     output_path: str | None = None,
@@ -294,7 +299,7 @@ def main():
         "--device", type=str, default="auto", help="Device to run inference on"
     )
     parser.add_argument(
-        "--max_new_tokens", type=int, default=512, help="Maximum tokens to generate"
+        "--max_new_tokens", type=int, default=4096, help="Maximum tokens to generate"
     )
     parser.add_argument(
         "--temperature", type=float, default=1.0, help="Sampling temperature"
