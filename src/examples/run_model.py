@@ -37,7 +37,7 @@ def main():
 
     # Solve problem
     response, extracted_answer, is_valid = model_inference.solve_problem(
-        problem_description="Using the numbers 1, 2, 3, and 4, create an arithmetic expression that equals 10.",
+        problem_description="Your task: Use 53, 3, 47, and 36 exactly once each with only +, -, *, and / operators to create an expression equal to 133.",
         max_new_tokens=1024,
         temperature=1.0,
     )
