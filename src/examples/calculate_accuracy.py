@@ -89,14 +89,14 @@ def safe_eval_expression(expression: str) -> tuple[float | None, bool]:
 
 
 def evaluate_prediction(
-    predicted_answer: str, correct_answer: str, nums: list[int]
+    predicted_answer: str, correct_answer: int, nums: list[int]
 ) -> dict:
     """
     Evaluate a single prediction against the correct answer.
 
     Args:
         predicted_answer: The model's predicted arithmetic expression
-        correct_answer: The correct arithmetic expression
+        correct_answer: The correct integer result
         nums: List of four numbers used in the problem
 
     Returns:
@@ -108,7 +108,7 @@ def evaluate_prediction(
         "is_correct": False,
         "is_valid_format": False,
         "predicted_result": None,
-        "correct_result": None,
+        "correct_result": correct_answer,
     }
 
     # Evaluate predicted answer
@@ -116,18 +116,9 @@ def evaluate_prediction(
     result["predicted_result"] = predicted_result
     result["is_valid_format"] = is_valid_predicted
 
-    # Evaluate correct answer
-    correct_result, is_valid_correct = safe_eval_expression(correct_answer)
-    result["correct_result"] = correct_result
-
     # Check if prediction is correct
-    if (
-        is_valid_predicted
-        and is_valid_correct
-        and predicted_result is not None
-        and correct_result is not None
-    ):
-        result["is_correct"] = abs(predicted_result - correct_result) < 1e-6
+    if is_valid_predicted and predicted_result is not None:
+        result["is_correct"] = abs(predicted_result - correct_answer) < 1e-6
 
     return result
 
