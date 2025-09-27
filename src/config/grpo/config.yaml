@@ -10,7 +10,7 @@ output_dir: models/grpo
 
 # Resume from checkpoint
 resume_from_checkpoint_sft: models/sft
-resume_from_checkpoint_grpo: models/grpo/checkpoint-1150
+resume_from_checkpoint_grpo: models/grpo/checkpoint-1160
 save_before_training: true
 
 # Random seed for reproducibility
